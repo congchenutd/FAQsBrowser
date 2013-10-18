@@ -12,7 +12,9 @@
 #include <QStyle>
 #include <QToolButton>
 #include <QApplication>
+#include <QWebFrame>
 #include <QDebug>
+#include <QWebElement>
 
 TabBar::TabBar(QWidget* parent)
     : QTabBar(parent)
@@ -197,7 +199,7 @@ int TabWidget::getDocTabIndex()
     return index;
 }
 
-int TabWidget::getSearchTabIndex()
+int TabWidget::getSearchTabIndex(const QString& query)
 {
     // find existing search tab
     for(int i = 0; i < count(); ++i)
@@ -206,7 +208,7 @@ int TabWidget::getSearchTabIndex()
 
     // or create a new one
     WebView* webView = onNewTab();
-    webView->loadUrl(QUrl("http://www.google.com"));
+    webView->loadUrl(QUrl("http://www.google.com/" + query));
     int index = getWebViewIndex(webView);
     setTabRole(index, SEARCH_ROLE);
     return index;
@@ -228,13 +230,13 @@ WebView* TabWidget::onNewTab(bool makeCurrent)
     connect(webView, SIGNAL(iconChanged()),         this, SLOT(onWebViewIconChanged()));
     connect(webView, SIGNAL(titleChanged(QString)), this, SLOT(onWebViewTitleChanged(QString)));
     connect(webView, SIGNAL(urlChanged(QUrl)),      this, SLOT(onWebViewUrlChanged(QUrl)));
+    connect(webView, SIGNAL(searchAPI(QString)),    this, SLOT(onSearchAPI(QString)));
+    connect(webView, SIGNAL(linkClicked(QUrl)),     this, SIGNAL(linkClicked(QUrl)));
 
     connect(webView->page(), SIGNAL(linkHovered(QString,QString,QString)),
             this, SIGNAL(linkHovered(QString)));
-    connect(webView, SIGNAL(linkClicked(QUrl)), this, SIGNAL(linkClicked(QUrl)));
     connect(webView->page()->action(QWebPage::Forward),  SIGNAL(changed()), this, SIGNAL(historyChanged()));
     connect(webView->page()->action(QWebPage::Back),     SIGNAL(changed()), this, SIGNAL(historyChanged()));
-
 
     addTab(webView, tr("(Untitled)"));
     if(makeCurrent)
@@ -251,6 +253,15 @@ void TabWidget::onReloadAllTabs()
     for (int i = 0; i < count(); ++i)
         if (WebView* tab = qobject_cast<WebView*>(widget(i)))
             tab->reload();
+}
+
+void TabWidget::onSearchAPI(const QString& apiName)
+{
+    if(!apiName.isEmpty())
+        setCurrentIndex(getSearchTabIndex("search?q=" + apiName));
+
+//    QWebElement root = webView->page()->mainFrame()->documentElement();
+//    root.findFirst("input[class=lst]").setAttribute("value", apiName);
 }
 
 void TabWidget::onCloseOtherTabs(int index)

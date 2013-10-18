@@ -21,7 +21,6 @@ private slots:
     void onAbout();
     void onOptions();
     void onDocPage();
-    void onSearchPage();
     void onZoomIn();
     void onZoomOut();
     void onZoomReset();

@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "TabWidget.h"
 #include "WebView.h"
+#include "DocParser.h"
 
 #include <QClipboard>
 #include <QMenu>
@@ -41,38 +42,31 @@ WebView::WebView(QWidget* parent)
       _page(new WebPage(this))
 {
     setPage(_page);
-    connect(page(), SIGNAL(loadingUrl(QUrl)), this, SIGNAL(urlChanged(QUrl)));
     page()->setForwardUnsupportedContent(true);
 }
 
 void WebView::contextMenuEvent(QContextMenuEvent *event)
 {
-    QMenu menu(this);
     QWebHitTestResult r = page()->mainFrame()->hitTestContent(event->pos());
-
-    QWebElement e = r.element();
-    while(e.tagName() != "UL")
+    QMenu menu(this);
+    if (!r.linkUrl().isEmpty())
+        menu.addAction(tr("Open in New Tab"), this, SLOT(onOpenLinkInNewTab()));
+    else
     {
-        qDebug() << "tagname=" << e.tagName() << e.toInnerXml();
-        if(e.tagName().isEmpty())
-            return;
-        e = e.parent();
-    }
-    e = e.previousSibling();
-    if(e.tagName() == "A")
-    {
-        qDebug() << "method name = " << e.attribute("name");
-    }
+        menu.addAction(pageAction(QWebPage::Back));
+        menu.addAction(pageAction(QWebPage::Forward));
+        menu.addAction(pageAction(QWebPage::Reload));
 
-//    if (!r.linkUrl().isEmpty())
-//        menu.addAction(tr("Open in New Tab"), this, SLOT(openLinkInNewTab()));
-//    else
-//    {
-//        menu.addAction(pageAction(QWebPage::Back));
-//        menu.addAction(pageAction(QWebPage::Forward));
-//        menu.addAction(pageAction(QWebPage::Reload));
-//    }
-//    menu.exec(mapToGlobal(event->pos()));
+        DocParser* parser = DocParserFactory::getInstance()->getParser("Java SE 7");
+        if(parser != 0)
+        {
+            _apiName = parser->parse(r.enclosingBlockElement());
+            if(!_apiName.isEmpty())
+                menu.addAction(QIcon(":/Images/Search.png"), tr("Search for this API"),
+                               this, SLOT(onSearchAPI()));
+        }
+    }
+    menu.exec(mapToGlobal(event->pos()));
 }
 
 void WebView::wheelEvent(QWheelEvent *event)
@@ -94,8 +88,12 @@ void WebView::mousePressEvent(QMouseEvent *event)
     QWebView::mousePressEvent(event);
 }
 
-void WebView::openLinkInNewTab() {
+void WebView::onOpenLinkInNewTab() {
     pageAction(QWebPage::OpenLinkInNewWindow)->trigger();
+}
+
+void WebView::onSearchAPI() {
+    emit searchAPI(_apiName);
 }
 
 void WebView::loadUrl(const QUrl &url)

@@ -89,11 +89,16 @@ protected:
     void mousePressEvent (QMouseEvent* event);
 
 private slots:
-    void openLinkInNewTab();
+    void onOpenLinkInNewTab();
+    void onSearchAPI();
+
+signals:
+    void searchAPI(const QString& apiName);
 
 private:
     QUrl     _initialUrl;
     WebPage* _page;
+    QString  _apiName;
 };
 
 #endif

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>469</width>
-    <height>289</height>
+    <width>1013</width>
+    <height>684</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -28,7 +28,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>469</width>
+     <width>1013</width>
      <height>26</height>
     </rect>
    </property>
@@ -45,7 +45,6 @@
      <string>&amp;View</string>
     </property>
     <addaction name="actionDocPage"/>
-    <addaction name="actionSearchPage"/>
     <addaction name="separator"/>
     <addaction name="actionZoomIn"/>
     <addaction name="actionZoomOut"/>
@@ -111,7 +110,6 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionDocPage"/>
-   <addaction name="actionSearchPage"/>
    <addaction name="separator"/>
    <addaction name="actionBack"/>
    <addaction name="actionForward"/>
@@ -153,19 +151,13 @@
   <action name="actionDocPage">
    <property name="icon">
     <iconset resource="Resource.qrc">
-     <normaloff>:/Images/Books.png</normaloff>:/Images/Books.png</iconset>
+     <normaloff>:/Images/Home.png</normaloff>:/Images/Home.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Document</string>
    </property>
-  </action>
-  <action name="actionSearchPage">
-   <property name="icon">
-    <iconset resource="Resource.qrc">
-     <normaloff>:/Images/Search.png</normaloff>:/Images/Search.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Search</string>
+   <property name="toolTip">
+    <string>Document page</string>
    </property>
   </action>
   <action name="actionOptions">

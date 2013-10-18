@@ -145,7 +145,7 @@ public:
     int getWebViewIndex(WebView* webView) const;
 
     int getDocTabIndex();
-    int getSearchTabIndex();
+    int getSearchTabIndex(const QString& query = QString());
 
     TabRole getTabRole(int index) const;
     void    setTabRole(int index, TabRole role);
@@ -157,6 +157,7 @@ public slots:
     void onCloseAllTabs();
     void onReloadTab(int index = -1);
     void onReloadAllTabs();
+    void onSearchAPI(const QString& apiName);
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);

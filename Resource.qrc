@@ -6,5 +6,6 @@
         <file>Images/Question.icns</file>
         <file>Images/Question.png</file>
         <file>Images/Search.png</file>
+        <file>Images/Home.png</file>
     </qresource>
 </RCC>

@@ -31,7 +31,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui.actionBack   ->setIcon(qApp->style()->standardIcon(QStyle::SP_ArrowBack));
     ui.actionForward->setIcon(qApp->style()->standardIcon(QStyle::SP_ArrowForward));
     ui.actionDocPage   ->setShortcut(QKeySequence("Ctrl+1"));
-    ui.actionSearchPage->setShortcut(QKeySequence("Ctrl+2"));
     ui.actionZoomIn    ->setShortcut(QKeySequence::ZoomIn);
     ui.actionZoomOut   ->setShortcut(QKeySequence::ZoomOut);
     ui.actionFullScreen->setShortcut(QKeySequence::FullScreen);
@@ -57,7 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui.actionAbout,      SIGNAL(triggered()), this, SLOT(onAbout()));
     connect(ui.actionOptions,    SIGNAL(triggered()), this, SLOT(onOptions()));
     connect(ui.actionDocPage,    SIGNAL(triggered()), this, SLOT(onDocPage()));
-    connect(ui.actionSearchPage, SIGNAL(triggered()), this, SLOT(onSearchPage()));
     connect(ui.actionZoomIn,     SIGNAL(triggered()), this, SLOT(onZoomIn()));
     connect(ui.actionZoomOut,    SIGNAL(triggered()), this, SLOT(onZoomOut()));
     connect(ui.actionResetZoom,  SIGNAL(triggered()), this, SLOT(onZoomReset()));
@@ -99,10 +97,6 @@ void MainWindow::onOptions()
 
 void MainWindow::onDocPage() {
     _tabWidget->setCurrentIndex(_tabWidget->getDocTabIndex());
-}
-
-void MainWindow::onSearchPage() {
-    _tabWidget->setCurrentIndex(_tabWidget->getSearchTabIndex());
 }
 
 void MainWindow::onZoomIn() {
