@@ -9,13 +9,13 @@ class QWebElement;
 class DocParser
 {
 public:
-    virtual QString parse(QWebElement& e) = 0;
+    virtual QString parse(const QWebElement& e) const = 0;
 };
 
 class JavaSE7Parser : public DocParser
 {
 public:
-    QString parse(QWebElement& e);
+    QString parse(const QWebElement& e) const;
 };
 
 /////////////////////////////////////////////////////////////////////

@@ -3,22 +3,23 @@
 #include <QWebElement>
 #include <QDebug>
 
-QString JavaSE7Parser::parse(QWebElement& e)
+QString JavaSE7Parser::parse(const QWebElement& e) const
 {
     QWebElement className = e.document().findAll("ul[class=inheritance]").last();
 
     if(e.isNull())
         return QString();
 
-    while(e.tagName() != "UL")
+    QWebElement p = e;
+    while(p.tagName() != "UL")
     {
-        if(e.tagName().isEmpty())
+        if(p.tagName().isEmpty())
             return QString();
-        e = e.parent();
+        p = p.parent();
     }
-    e = e.previousSibling();
-    if(e.tagName() == "A")
-        return className.toPlainText() + "." + e.attribute("name");
+    p = p.previousSibling();
+    if(p.tagName() == "A")
+        return className.toPlainText() + "." + p.attribute("name");
 
     return QString();
 }
