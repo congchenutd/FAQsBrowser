@@ -115,8 +115,7 @@ void MainWindow::onZoomReset() {
 }
 
 void MainWindow::onZoomTextOnly(bool textOnly) {
-    if(WebView* webView = currentWebView())
-        webView->page()->settings()->setAttribute(QWebSettings::ZoomTextOnly, textOnly);
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::ZoomTextOnly, textOnly);
 }
 
 void MainWindow::onFullScreen(bool fullScreen)

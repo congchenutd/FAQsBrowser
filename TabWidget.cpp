@@ -1,5 +1,6 @@
 #include "TabWidget.h"
 #include "WebView.h"
+#include "SearchDlg.h"
 
 #include <QMimeData>
 #include <QClipboard>
@@ -257,8 +258,10 @@ void TabWidget::onReloadAllTabs()
 
 void TabWidget::onSearchAPI(const QString& apiName)
 {
-    if(!apiName.isEmpty())
-        setCurrentIndex(getSearchTabIndex("search?q=" + apiName));
+    SearchDlg dlg(this);
+    dlg.setQuery(apiName);
+    if(dlg.exec() == QDialog::Accepted)
+        setCurrentIndex(getSearchTabIndex("search?q=" + dlg.getQuery()));
 
 //    QWebElement root = webView->page()->mainFrame()->documentElement();
 //    root.findFirst("input[class=lst]").setAttribute("value", apiName);

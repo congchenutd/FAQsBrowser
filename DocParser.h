@@ -32,7 +32,7 @@ private:
     DocParserFactory();
 
 private:
-    static DocParserFactory*  _instance;
+    static DocParserFactory* _instance;
 };
 
 #endif // DOCPARSER_H

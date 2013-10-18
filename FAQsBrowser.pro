@@ -17,17 +17,20 @@ Main.cpp \
     WebView.cpp \
     OptionsDlg.cpp \
     SearchBar.cpp \
-    DocParser.cpp
+    DocParser.cpp \
+    SearchDlg.cpp
 
 HEADERS  += MainWindow.h \
     TabWidget.h \
     WebView.h \
     OptionsDlg.h \
     SearchBar.h \
-    DocParser.h
+    DocParser.h \
+    SearchDlg.h
 
 FORMS    += MainWindow.ui \
-    OptionsDlg.ui
+    OptionsDlg.ui \
+    SearchDlg.ui
 
 RESOURCES += \
     Resource.qrc
