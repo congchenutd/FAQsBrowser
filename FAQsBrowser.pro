@@ -16,13 +16,15 @@ Main.cpp \
     TabWidget.cpp \
     WebView.cpp \
     OptionsDlg.cpp \
-    SearchBar.cpp
+    SearchBar.cpp \
+    DocParser.cpp
 
 HEADERS  += MainWindow.h \
     TabWidget.h \
     WebView.h \
     OptionsDlg.h \
-    SearchBar.h
+    SearchBar.h \
+    DocParser.h
 
 FORMS    += MainWindow.ui \
     OptionsDlg.ui

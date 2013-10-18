@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QBuffer>
 #include <QProgressBar>
+#include <QWebElement>
 
 WebPage::WebPage(QObject* parent)
     : QWebPage(parent) {}
@@ -48,15 +49,30 @@ void WebView::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu menu(this);
     QWebHitTestResult r = page()->mainFrame()->hitTestContent(event->pos());
-    if (!r.linkUrl().isEmpty())
-        menu.addAction(tr("Open in New Tab"), this, SLOT(openLinkInNewTab()));
-    else
+
+    QWebElement e = r.element();
+    while(e.tagName() != "UL")
     {
-        menu.addAction(pageAction(QWebPage::Back));
-        menu.addAction(pageAction(QWebPage::Forward));
-        menu.addAction(pageAction(QWebPage::Reload));
+        qDebug() << "tagname=" << e.tagName() << e.toInnerXml();
+        if(e.tagName().isEmpty())
+            return;
+        e = e.parent();
     }
-    menu.exec(mapToGlobal(event->pos()));
+    e = e.previousSibling();
+    if(e.tagName() == "A")
+    {
+        qDebug() << "method name = " << e.attribute("name");
+    }
+
+//    if (!r.linkUrl().isEmpty())
+//        menu.addAction(tr("Open in New Tab"), this, SLOT(openLinkInNewTab()));
+//    else
+//    {
+//        menu.addAction(pageAction(QWebPage::Back));
+//        menu.addAction(pageAction(QWebPage::Forward));
+//        menu.addAction(pageAction(QWebPage::Reload));
+//    }
+//    menu.exec(mapToGlobal(event->pos()));
 }
 
 void WebView::wheelEvent(QWheelEvent *event)
