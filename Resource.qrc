@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Images/Books.png</file>
+        <file>Images/Loading.gif</file>
+        <file>Images/DefaultIcon.png</file>
+        <file>Images/Question.icns</file>
+        <file>Images/Question.png</file>
+        <file>Images/Search.png</file>
+    </qresource>
+</RCC>

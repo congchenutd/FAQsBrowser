@@ -1,0 +1,24 @@
+#ifndef OPTIONSDLG_H
+#define OPTIONSDLG_H
+
+#include "ui_OptionsDlg.h"
+
+class QNetworkReply;
+
+class OptionsDlg : public QDialog
+{
+    Q_OBJECT
+
+public:
+    OptionsDlg(QWidget* parent = 0);
+    void accept();
+
+private slots:
+    void pingServer();
+    void onPingReply(QNetworkReply* reply);
+
+private:
+    Ui::OptionsDlg ui;
+};
+
+#endif // OPTIONSDLG_H
