@@ -231,13 +231,13 @@ WebView* TabWidget::onNewTab(bool makeCurrent)
     connect(webView, SIGNAL(iconChanged()),         this, SLOT(onWebViewIconChanged()));
     connect(webView, SIGNAL(titleChanged(QString)), this, SLOT(onWebViewTitleChanged(QString)));
     connect(webView, SIGNAL(urlChanged(QUrl)),      this, SLOT(onWebViewUrlChanged(QUrl)));
-    connect(webView, SIGNAL(searchAPI(QString)),    this, SLOT(onSearchAPI(QString)));
+    connect(webView, SIGNAL(searchAPI(APIName)),    this, SLOT(onSearchAPI(APIName)));
     connect(webView, SIGNAL(linkClicked(QUrl)),     this, SIGNAL(linkClicked(QUrl)));
 
     connect(webView->page(), SIGNAL(linkHovered(QString,QString,QString)),
             this, SIGNAL(linkHovered(QString)));
-    connect(webView->page()->action(QWebPage::Forward),  SIGNAL(changed()), this, SIGNAL(historyChanged()));
-    connect(webView->page()->action(QWebPage::Back),     SIGNAL(changed()), this, SIGNAL(historyChanged()));
+    connect(webView->page()->action(QWebPage::Forward), SIGNAL(changed()), this, SIGNAL(historyChanged()));
+    connect(webView->page()->action(QWebPage::Back),    SIGNAL(changed()), this, SIGNAL(historyChanged()));
 
     addTab(webView, tr("(Untitled)"));
     if(makeCurrent)
@@ -251,20 +251,17 @@ WebView* TabWidget::onNewTab(bool makeCurrent)
 
 void TabWidget::onReloadAllTabs()
 {
-    for (int i = 0; i < count(); ++i)
-        if (WebView* tab = qobject_cast<WebView*>(widget(i)))
-            tab->reload();
+    for(int i = 0; i < count(); ++i)
+        if(WebView* webView = qobject_cast<WebView*>(widget(i)))
+            webView->reload();
 }
 
-void TabWidget::onSearchAPI(const QString& apiName)
+void TabWidget::onSearchAPI(const APIName& apiName)
 {
     SearchDlg dlg(this);
-    dlg.setQuery(apiName);
+    dlg.setQuery(apiName.toString() + " ");
     if(dlg.exec() == QDialog::Accepted)
         setCurrentIndex(getSearchTabIndex("search?q=" + dlg.getQuery()));
-
-//    QWebElement root = webView->page()->mainFrame()->documentElement();
-//    root.findFirst("input[class=lst]").setAttribute("value", apiName);
 }
 
 void TabWidget::onCloseOtherTabs(int index)

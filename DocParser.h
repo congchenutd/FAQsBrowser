@@ -2,20 +2,31 @@
 #define DOCPARSER_H
 
 #include <QMetaType>
+#include <QString>
 
-class QString;
+struct APIName
+{
+    QString libName;
+    QString fullClassName;
+    QString shortClassName;
+    QString methodName;
+
+    QString toString() const;
+};
+
 class QWebElement;
 
 class DocParser
 {
 public:
-    virtual QString parse(const QWebElement& e) const = 0;
+    virtual APIName parse(const QWebElement& e) const = 0;
 };
 
 class JavaSE7Parser : public DocParser
 {
 public:
-    QString parse(const QWebElement& e) const;
+    APIName parse(const QWebElement& e) const;
+    static QByteArray getLibName();
 };
 
 /////////////////////////////////////////////////////////////////////

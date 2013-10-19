@@ -118,6 +118,8 @@ class QMenu;
 class QStackedWidget;
 QT_END_NAMESPACE
 
+struct APIName;
+
 class TabWidget : public QTabWidget
 {
     Q_OBJECT
@@ -157,7 +159,7 @@ public slots:
     void onCloseAllTabs();
     void onReloadTab(int index = -1);
     void onReloadAllTabs();
-    void onSearchAPI(const QString& apiName);
+    void onSearchAPI(const APIName& apiName);
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);

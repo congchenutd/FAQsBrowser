@@ -43,6 +43,7 @@
 #define WEBVIEW_H
 
 #include <QWebView>
+#include "DocParser.h"
 
 QT_BEGIN_NAMESPACE
 class QAuthenticator;
@@ -93,12 +94,12 @@ private slots:
     void onSearchAPI();
 
 signals:
-    void searchAPI(const QString& apiName);
+    void searchAPI(const APIName& apiName);
 
 private:
     QUrl     _initialUrl;
     WebPage* _page;
-    QString  _apiName;
+    APIName  _apiName;
 };
 
 #endif

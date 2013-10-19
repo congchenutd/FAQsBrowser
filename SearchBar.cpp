@@ -34,7 +34,10 @@ void SearchBar::setVisible(bool visible)
 {
     QToolBar::setVisible(visible);
     if(visible)
+    {
+        _lineEdit->selectAll();
         _lineEdit->setFocus();
+    }
 }
 
 void SearchBar::keyPressEvent(QKeyEvent* e)

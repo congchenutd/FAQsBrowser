@@ -61,7 +61,7 @@ void WebView::contextMenuEvent(QContextMenuEvent *event)
         if(parser != 0)
         {
             _apiName = parser->parse(r.enclosingBlockElement());
-            if(!_apiName.isEmpty())
+            if(!_apiName.toString().isEmpty())
                 menu.addAction(QIcon(":/Images/Search.png"), tr("Search for this API"),
                                this, SLOT(onSearchAPI()));
         }
