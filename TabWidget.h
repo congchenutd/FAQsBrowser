@@ -42,8 +42,7 @@
 #ifndef TABWIDGET_H
 #define TABWIDGET_H
 
-#include <QtWidgets/QTabBar>
-#include <QtWidgets/QShortcut>
+#include <QTabBar>
 
 class WebView;
 
@@ -89,17 +88,16 @@ public:
     QAction* getActionRefresh()     const { return _actionRefresh;     }
     QAction* getActionRefreshAll()  const { return _actionRefreshAll;  }
 
+public slots:
+    void onContextMenu(const QPoint& position);
+
 private slots:
     void onCloseTab();
     void onCloseOtherTabs();
     void onReloadTab();
-    void onContextMenu(const QPoint &position);
 
 private:
-    friend class TabWidget;
-
-    int m_dragCurrentIndex;
-
+    // for the context menu
     QAction* _actionNew;
     QAction* _actionClose;
     QAction* _actionCloseOthers;
@@ -108,17 +106,10 @@ private:
     QAction* _actionRefreshAll;
 };
 
-#include <QUrl>
+////////////////////////////////////////////////////////////////////
 #include <QTabWidget>
 
-QT_BEGIN_NAMESPACE
-class QCompleter;
-class QLineEdit;
-class QMenu;
-class QStackedWidget;
-QT_END_NAMESPACE
-
-struct APIName;
+struct APIInfo;
 
 class TabWidget : public QTabWidget
 {
@@ -159,7 +150,7 @@ public slots:
     void onCloseAllTabs();
     void onReloadTab(int index = -1);
     void onReloadAllTabs();
-    void onSearchAPI(const APIName& apiName);
+    void onAPISearch(const APIInfo& apiName);
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
@@ -172,8 +163,6 @@ private slots:
     void onWebViewUrlChanged(const QUrl &url);   // currently useless
 
 private:
-    QAction*_newTabAction;
-    QAction*_closeTabAction;
     TabBar* _tabBar;
 };
 

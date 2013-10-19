@@ -44,8 +44,9 @@ void SearchBar::keyPressEvent(QKeyEvent* e)
 {
     QToolBar::keyPressEvent(e);
     if(e->key() == Qt::Key_Escape)
-        hide();
-    else if(e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return)
+        emit hideMe();
+    else
+    if(e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return)
         onFindNext();
 }
 

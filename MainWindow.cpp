@@ -76,6 +76,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(_tabWidget, SIGNAL(historyChanged()),             this, SLOT(onHistoryChanged()));
     connect(_tabWidget, SIGNAL(statusBarMessage(QString)), statusBar(), SLOT(showMessage(QString)));
     connect(_tabWidget, SIGNAL(linkHovered(QString)),      statusBar(), SLOT(showMessage(QString)));
+
+    connect(ui.toolBarSearch, SIGNAL(hideMe()), ui.actionShowSearch, SLOT(toggle()));
 }
 
 MainWindow* MainWindow::_instance = 0;

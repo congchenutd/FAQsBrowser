@@ -13,7 +13,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget* parent = 0);
-    TabWidget* getTabWidget() const { return _tabWidget;   }
+    TabWidget* getTabWidget() const { return _tabWidget; }
 
     static MainWindow* getInstance();
 

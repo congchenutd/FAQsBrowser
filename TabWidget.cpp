@@ -27,7 +27,7 @@ TabBar::TabBar(QWidget* parent)
 
     _actionNew         = new QAction(tr("New Tab"),           this);
     _actionClose       = new QAction(tr("Close Tab"),         this);
-    _actionCloseOthers = new QAction(tr("Close &Other Tabs"), this);
+    _actionCloseOthers = new QAction(tr("Close Other Tabs"), this);
     _actionCloseAll    = new QAction(tr("Close All Tabs"),    this);
     _actionRefresh     = new QAction(tr("Reload Tab"),        this);
     _actionRefreshAll  = new QAction(tr("Reload All Tabs"),   this);
@@ -65,7 +65,7 @@ void TabBar::setTabRole(int index, TabRole role)
     setTabInfo(index, info);
 }
 
-void TabBar::onContextMenu(const QPoint &position)
+void TabBar::onContextMenu(const QPoint& position)
 {
     QMenu menu;
     menu.addAction(_actionNew);
@@ -194,7 +194,7 @@ int TabWidget::getDocTabIndex()
 
     // or create a new one
     WebView* webView = onNewTab();
-    webView->loadUrl(QUrl("http://docs.oracle.com/javase/7/docs/api/"));
+    webView->load(QUrl("http://docs.oracle.com/javase/7/docs/api/"));
     int index = getWebViewIndex(webView);
     setTabRole(index, DOC_ROLE);
     return index;
@@ -209,7 +209,7 @@ int TabWidget::getSearchTabIndex(const QString& query)
 
     // or create a new one
     WebView* webView = onNewTab();
-    webView->loadUrl(QUrl("http://www.google.com/" + query));
+    webView->load(QUrl("http://www.google.com/" + query));
     int index = getWebViewIndex(webView);
     setTabRole(index, SEARCH_ROLE);
     return index;
@@ -231,7 +231,7 @@ WebView* TabWidget::onNewTab(bool makeCurrent)
     connect(webView, SIGNAL(iconChanged()),         this, SLOT(onWebViewIconChanged()));
     connect(webView, SIGNAL(titleChanged(QString)), this, SLOT(onWebViewTitleChanged(QString)));
     connect(webView, SIGNAL(urlChanged(QUrl)),      this, SLOT(onWebViewUrlChanged(QUrl)));
-    connect(webView, SIGNAL(searchAPI(APIName)),    this, SLOT(onSearchAPI(APIName)));
+    connect(webView, SIGNAL(apiSearch(APIInfo)),    this, SLOT(onAPISearch(APIInfo)));
     connect(webView, SIGNAL(linkClicked(QUrl)),     this, SIGNAL(linkClicked(QUrl)));
 
     connect(webView->page(), SIGNAL(linkHovered(QString,QString,QString)),
@@ -256,7 +256,7 @@ void TabWidget::onReloadAllTabs()
             webView->reload();
 }
 
-void TabWidget::onSearchAPI(const APIName& apiName)
+void TabWidget::onAPISearch(const APIInfo& apiName)
 {
     SearchDlg dlg(this);
     dlg.setQuery(apiName.toString() + " ");

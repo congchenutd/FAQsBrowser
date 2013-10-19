@@ -4,39 +4,45 @@
 #include <QMetaType>
 #include <QString>
 
-struct APIName
+struct APIInfo
 {
-    QString libName;
-    QString packageName;
-    QString className;
-    QString methodName;
+    QString _libName;
+    QString _packageName;
+    QString _className;
+    QString _methodName;
 
+    bool    isEmpty()  const;
     QString toString() const;
 };
 
 class QWebElement;
 
-class DocParser
+//////////////////////////////////////////////////////////////////////
+// parses the web element clicked and finds the APIName
+class IDocParser
 {
 public:
-    virtual APIName parse(const QWebElement& e) const = 0;
+    virtual APIInfo parse(const QWebElement& e) const = 0;
+    virtual ~IDocParser() {}
 };
 
-class JavaSE7Parser : public DocParser
+class JavaSE7Parser : public IDocParser
 {
 public:
-    APIName parse(const QWebElement& e) const;
+    APIInfo parse(const QWebElement& e) const;
     static QByteArray getLibName();
 };
 
+
 /////////////////////////////////////////////////////////////////////
+// return a parser based on its name
 
 Q_DECLARE_METATYPE(JavaSE7Parser);
 
 class DocParserFactory
 {
 public:
-    DocParser* getParser(const QString& name) const;
+    IDocParser* getParser(const QString& name) const;
     static DocParserFactory* getInstance();
 
 private:

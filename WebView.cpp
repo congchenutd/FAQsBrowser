@@ -3,15 +3,10 @@
 #include "WebView.h"
 #include "DocParser.h"
 
-#include <QClipboard>
 #include <QMenu>
-#include <QMessageBox>
 #include <QMouseEvent>
 #include <QWebHitTestResult>
 #include <QNetworkReply>
-#include <QDebug>
-#include <QBuffer>
-#include <QProgressBar>
 #include <QWebElement>
 
 WebPage::WebPage(QObject* parent)
@@ -42,14 +37,14 @@ WebView::WebView(QWidget* parent)
       _page(new WebPage(this))
 {
     setPage(_page);
-    page()->setForwardUnsupportedContent(true);
+//    page()->setForwardUnsupportedContent(true);
 }
 
 void WebView::contextMenuEvent(QContextMenuEvent *event)
 {
-    QWebHitTestResult r = page()->mainFrame()->hitTestContent(event->pos());
+    QWebHitTestResult hitTest = page()->mainFrame()->hitTestContent(event->pos());
     QMenu menu(this);
-    if (!r.linkUrl().isEmpty())
+    if(!hitTest.linkUrl().isEmpty())
         menu.addAction(tr("Open in New Tab"), this, SLOT(onOpenLinkInNewTab()));
     else
     {
@@ -57,11 +52,11 @@ void WebView::contextMenuEvent(QContextMenuEvent *event)
         menu.addAction(pageAction(QWebPage::Forward));
         menu.addAction(pageAction(QWebPage::Reload));
 
-        DocParser* parser = DocParserFactory::getInstance()->getParser("Java SE 7");
+        IDocParser* parser = DocParserFactory::getInstance()->getParser("Java SE 7");
         if(parser != 0)
         {
-            _apiName = parser->parse(r.enclosingBlockElement());
-            if(!_apiName.toString().isEmpty())
+            _apiInfo = parser->parse(hitTest.enclosingBlockElement());
+            if(!_apiInfo.isEmpty())
                 menu.addAction(QIcon(":/Images/Search.png"), tr("Search for this API"),
                                this, SLOT(onSearchAPI()));
         }
@@ -71,7 +66,8 @@ void WebView::contextMenuEvent(QContextMenuEvent *event)
 
 void WebView::wheelEvent(QWheelEvent *event)
 {
-    if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+    // zoom with wheel
+    if(QApplication::keyboardModifiers() & Qt::ControlModifier) {
         int numDegrees = event->delta() / 8;
         int numSteps = numDegrees / 15;
         setTextSizeMultiplier(textSizeMultiplier() + numSteps * 0.1);
@@ -83,6 +79,7 @@ void WebView::wheelEvent(QWheelEvent *event)
 
 void WebView::mousePressEvent(QMouseEvent *event)
 {
+    // tell the page what keys/buttons are pressed for opening page in new tab
     _page->setKeyboardModifiers(event->modifiers());
     _page->setPressedButtons   (event->buttons());
     QWebView::mousePressEvent(event);
@@ -93,17 +90,5 @@ void WebView::onOpenLinkInNewTab() {
 }
 
 void WebView::onSearchAPI() {
-    emit searchAPI(_apiName);
-}
-
-void WebView::loadUrl(const QUrl &url)
-{
-    _initialUrl = url;
-    load(url);
-}
-
-QUrl WebView::url() const
-{
-    QUrl url = QWebView::url();
-    return url.isEmpty() ? _initialUrl : url;
+    emit apiSearch(_apiInfo);
 }

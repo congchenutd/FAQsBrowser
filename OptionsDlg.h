@@ -14,7 +14,7 @@ public:
     void accept();
 
 private slots:
-    void pingServer();
+    void onPingServer();
     void onPingReply(QNetworkReply* reply);
 
 private:

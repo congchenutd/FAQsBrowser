@@ -3,35 +3,38 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QSettings>
-#include <QDebug>
 
 OptionsDlg::OptionsDlg(QWidget* parent) :
     QDialog(parent)
 {
     ui.setupUi(this);
 
+    // load settings
     QSettings settings("FQAsBrowser.ini", QSettings::IniFormat, this);
     ui.leServerIP  ->setText(settings.value("ServerIP")  .toString());
     ui.leServerPort->setText(settings.value("ServerPort").toString());
     ui.leUsername  ->setText(settings.value("UserName")  .toString());
     ui.leEmail     ->setText(settings.value("Email")     .toString());
 
-    connect(ui.leServerIP,   SIGNAL(textEdited(QString)), this, SLOT(pingServer()));
-    connect(ui.leServerPort, SIGNAL(textEdited(QString)), this, SLOT(pingServer()));
-    pingServer();
+    connect(ui.leServerIP,   SIGNAL(textEdited(QString)), this, SLOT(onPingServer()));
+    connect(ui.leServerPort, SIGNAL(textEdited(QString)), this, SLOT(onPingServer()));
+
+    onPingServer();  // update server status
 }
 
 void OptionsDlg::accept()
 {
+    // save settings
     QSettings settings("FQAsBrowser.ini", QSettings::IniFormat, this);
     settings.setValue("ServerIP",   ui.leServerIP  ->text());
     settings.setValue("ServerPort", ui.leServerPort->text());
     settings.setValue("UserName",   ui.leUsername  ->text());
     settings.setValue("Email",      ui.leEmail     ->text());
+
     QDialog::accept();
 }
 
-void OptionsDlg::pingServer()
+void OptionsDlg::onPingServer()
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)),

@@ -20,6 +20,7 @@ protected:
 signals:
     void search   (const QString& target, bool forward,   bool matchCase);
     void highlight(const QString& target, bool highlight, bool matchCase);
+    void hideMe();
 
 private slots:
     void onEdited(const QString& text);
