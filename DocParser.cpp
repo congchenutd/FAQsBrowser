@@ -20,10 +20,11 @@ APIName JavaSE7Parser::parse(const QWebElement& e) const
     p = p.previousSibling();
     if(p.tagName() == "A")
     {
-        result.fullClassName  = e.document().findAll("ul[class=inheritance]").last().toPlainText();
-        result.shortClassName = result.fullClassName.split(".").last().remove(QRegExp("<.*>"));
-        result.libName = getLibName();
-        result.methodName = p.attribute("name").remove(QRegExp("\\(.*\\)"));
+        QString fullClassName = e.document().findAll("ul[class=inheritance]").last().toPlainText();
+        result.className   = fullClassName.split(".").last().remove(QRegExp("<.*>"));
+        result.packageName = fullClassName.remove(QRegExp("\\.\\w+$"));
+        result.libName     = getLibName();
+        result.methodName  = p.attribute("name").remove(QRegExp("\\(.*\\)"));
     }
 
     return result;
@@ -59,8 +60,8 @@ DocParserFactory::DocParserFactory()
 ////////////////////////////////////////////////////////////////////////////////
 QString APIName::toString() const
 {
-    QString result = libName + " " + shortClassName;
-    if(shortClassName != methodName)  // constructor have the same name as class
+    QString result = libName + " " + className;
+    if(className != methodName)  // constructor have the same name as class
         result += " " + methodName;
     return result;
 }

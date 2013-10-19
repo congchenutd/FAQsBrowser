@@ -7,8 +7,8 @@
 struct APIName
 {
     QString libName;
-    QString fullClassName;
-    QString shortClassName;
+    QString packageName;
+    QString className;
     QString methodName;
 
     QString toString() const;
