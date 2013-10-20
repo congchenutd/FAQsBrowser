@@ -18,7 +18,8 @@ Main.cpp \
     OptionsDlg.cpp \
     SearchBar.cpp \
     DocParser.cpp \
-    SearchDlg.cpp
+    SearchDlg.cpp \
+    TabBar.cpp
 
 HEADERS  += MainWindow.h \
     TabWidget.h \
@@ -26,7 +27,8 @@ HEADERS  += MainWindow.h \
     OptionsDlg.h \
     SearchBar.h \
     DocParser.h \
-    SearchDlg.h
+    SearchDlg.h \
+    TabBar.h
 
 FORMS    += MainWindow.ui \
     OptionsDlg.ui \

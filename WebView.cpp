@@ -15,10 +15,15 @@ WebPage::WebPage(QObject* parent)
 bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type)
 {
     // links on the search page open in new tab
+    WebView* thisView = static_cast<WebView*>(view());
     if(type == QWebPage::NavigationTypeLinkClicked &&
-       static_cast<WebView*>(view())->getRole() == WebView::SEARCH_ROLE)
+       thisView->getRole() == WebView::SEARCH_ROLE)
     {
-        MainWindow::getInstance()->getTabWidget()->onNewTab(WebView::RESULT_ROLE)->load(request);
+        WebView* newView = MainWindow::getInstance()->getTabWidget()->onNewTab();
+        newView->setRole (WebView::RESULT_ROLE);
+        newView->setAPI  (thisView->getAPI());    // transfer the attributes of a page
+        newView->setQuery(thisView->getQuery());
+        newView->load(request);
         return false;
     }
     return QWebPage::acceptNavigationRequest(frame, request, type);
@@ -36,8 +41,6 @@ WebView::WebView(QWidget* parent)
       _page(new WebPage(this))
 {
     setPage(_page);
-//    page()->setForwardUnsupportedContent(true);
-
     connect(_page, SIGNAL(loadProgress(int)), this, SLOT(onProgress(int)));
 }
 
@@ -56,8 +59,8 @@ void WebView::contextMenuEvent(QContextMenuEvent *event)
         IDocParser* parser = DocParserFactory::getInstance()->getParser("Java SE 7");
         if(parser != 0)
         {
-            _apiInfo = parser->parse(hitTest.enclosingBlockElement());
-            if(!_apiInfo.isEmpty())
+            setAPI(parser->parse(hitTest.enclosingBlockElement()));
+            if(!getAPI().isEmpty())
                 menu.addAction(QIcon(":/Images/Search.png"), tr("Search for this API"),
                                this, SLOT(onSearchAPI()));
         }
@@ -81,8 +84,8 @@ void WebView::wheelEvent(QWheelEvent *event)
 void WebView::mousePressEvent(QMouseEvent *event)
 {
     // tell the page what keys/buttons are pressed for opening page in new tab
-    _page->setKeyboardModifiers(event->modifiers());
-    _page->setPressedButtons   (event->buttons());
+    _keyboardModifiers = event->modifiers();
+    _pressedButtons    = event->buttons();
     QWebView::mousePressEvent(event);
 }
 
@@ -91,5 +94,5 @@ void WebView::onOpenLinkInNewTab() {
 }
 
 void WebView::onSearchAPI() {
-    emit apiSearch(_apiInfo);
+    emit apiSearch(_api);
 }

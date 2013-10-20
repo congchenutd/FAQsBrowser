@@ -1,97 +1,21 @@
 #include "TabWidget.h"
+#include "TabBar.h"
 #include "WebView.h"
 #include "SearchDlg.h"
 
-#include <QMimeData>
-#include <QClipboard>
-#include <QListView>
 #include <QMenu>
 #include <QMessageBox>
-#include <QDrag>
 #include <QMouseEvent>
-#include <QStackedWidget>
 #include <QStyle>
-#include <QToolButton>
 #include <QApplication>
 #include <QWebFrame>
 #include <QDebug>
 #include <QWebElement>
 
-TabBar::TabBar(QWidget* parent)
-    : QTabBar(parent)
-{
-    setAcceptDrops(true);
-    setTabsClosable(true);
-    setMovable(true);
-    setContextMenuPolicy(Qt::CustomContextMenu);
-
-    _actionNew         = new QAction(tr("New Tab"),           this);
-    _actionClose       = new QAction(tr("Close Tab"),         this);
-    _actionCloseOthers = new QAction(tr("Close Other Tabs"), this);
-    _actionCloseAll    = new QAction(tr("Close All Tabs"),    this);
-    _actionRefresh     = new QAction(tr("Reload Tab"),        this);
-    _actionRefreshAll  = new QAction(tr("Reload All Tabs"),   this);
-
-    _actionNew    ->setShortcut(QKeySequence::AddTab);
-    _actionClose  ->setShortcut(QKeySequence::Close);
-    _actionRefresh->setShortcut(QKeySequence::Refresh);
-
-    connect(_actionNew,         SIGNAL(triggered()), this, SIGNAL(newTab()));
-    connect(_actionCloseAll,    SIGNAL(triggered()), this, SIGNAL(closeAllTabs()));
-    connect(_actionRefreshAll,  SIGNAL(triggered()), this, SIGNAL(reloadAllTabs()));
-    connect(_actionClose,       SIGNAL(triggered()), this, SLOT(onCloseTab()));
-    connect(_actionCloseOthers, SIGNAL(triggered()), this, SLOT(onCloseOtherTabs()));
-    connect(_actionRefresh,     SIGNAL(triggered()), this, SLOT(onReloadTab()));
-
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextMenu(QPoint)));
-}
-
-void TabBar::onContextMenu(const QPoint& position)
-{
-    QMenu menu;
-    menu.addAction(_actionNew);
-    menu.addSeparator();
-
-    int index = tabAt(position);
-    if(index != -1)
-    {
-        _actionClose      ->setData(index);
-        _actionCloseOthers->setData(index);
-        menu.addAction(_actionClose);
-        menu.addAction(_actionCloseOthers);
-    }
-
-    menu.addAction(_actionCloseAll);
-    menu.addSeparator();
-
-    if(index != -1)
-    {
-        _actionRefresh->setData(index);
-        menu.addAction(_actionRefresh);
-    }
-
-    menu.addAction(_actionRefreshAll);
-    menu.exec(QCursor::pos());
-}
-
-void TabBar::onCloseTab() {
-    emit tabCloseRequested(currentIndex());
-}
-
-void TabBar::onCloseOtherTabs() {
-    emit closeOtherTabs(currentIndex());
-}
-
-void TabBar::onReloadTab() {
-    emit reloadTab(currentIndex());
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////
 TabWidget::TabWidget(QWidget *parent)
     : QTabWidget(parent),
       _tabBar(new TabBar(this)),
-      _lastTabIndex(-1)
+      _prevTabIndex(-1)
 {
     setElideMode(Qt::ElideRight);
     setTabBar(_tabBar);
@@ -107,64 +31,14 @@ TabWidget::TabWidget(QWidget *parent)
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(onCurrentChanged(int)));
 }
 
-void TabWidget::onReloadTab(int index)
-{
-    if(index < 0)
-        index = currentIndex();     // When index is -1 index chooses the current tab
-    if(index < 0 || index >= count())
-        return;
-
-    if (WebView* tab = qobject_cast<WebView*>(this->widget(index)))
-        tab->reload();
-}
-
-void TabWidget::onCurrentChanged(int index)
-{
-    if(index == _lastTabIndex)
-        return;
-
-    WebView* webView = getWebView(index);
-    if(!webView)
-        return;
-
-    if(WebView* oldWebView = getWebView(_lastTabIndex))
-    {
-        disconnect(oldWebView, SIGNAL(statusBarMessage(QString)),
-                this, SIGNAL(statusBarMessage(QString)));
-        disconnect(oldWebView, SIGNAL(loadProgress(int)),
-                this, SIGNAL(loadProgress(int)));
-    }
-    connect(webView, SIGNAL(statusBarMessage(QString)), this, SIGNAL(statusBarMessage(QString)));
-    connect(webView, SIGNAL(loadProgress(int)),         this, SIGNAL(loadProgress(int)));
-
-    emit currentTitleChanged(webView->title());
-    emit historyChanged();
-    emit loadProgress(webView->getProgress());
-
-    _lastTabIndex = index;
-}
-
 WebView* TabWidget::getCurrentWebView() const {
     return getWebView(currentIndex());
 }
 
 WebView* TabWidget::getWebView(int index) const
 {
-//    if(index < 0)
-//        return 0;
     if(WebView* webView = qobject_cast<WebView*>(widget(index)))
         return webView;
-
-    // optimization to delay creating the first webview
-//    if(count() == 1)
-//    {
-//        TabWidget* that = const_cast<TabWidget*>(this);
-//        that->setUpdatesEnabled(false);
-//        that->onNewTab();
-//        that->onCloseTab(0);
-//        that->setUpdatesEnabled(true);
-//        return getCurrentWebView();
-//    }
     return 0;
 }
 
@@ -180,12 +54,13 @@ int TabWidget::getDocTabIndex()
             return i;
 
     // or create a new one
-    WebView* webView = onNewTab(WebView::DOC_ROLE);
+    WebView* webView = onNewTab();
+    webView->setRole(WebView::DOC_ROLE);
     webView->load(QUrl("http://docs.oracle.com/javase/7/docs/api/"));
     return getWebViewIndex(webView);
 }
 
-int TabWidget::getSearchTabIndex(const QString& query)
+int TabWidget::getSearchTabIndex(const API& api, const QString& query)
 {
     // find existing search page
     int i;
@@ -194,25 +69,63 @@ int TabWidget::getSearchTabIndex(const QString& query)
             break;
 
     // create a new view or using the existing one
-    WebView* webView = (i == count()) ? onNewTab(WebView::SEARCH_ROLE) : getWebView(i);
+    WebView* webView = (i == count()) ? onNewTab()
+                                      : getWebView(i);
 
     // load page
+    webView->setRole(WebView::SEARCH_ROLE);
+    webView->setAPI(api);
+    webView->setQuery(query);
     webView->load(QUrl("http://www.google.com/" + query));
     return i;
 }
 
-WebView* TabWidget::onNewTab(WebView::PageRole role)
+void TabWidget::onReloadTab(int index)
+{
+    if(index < 0)
+        index = currentIndex();     // When index is -1 index chooses the current tab
+    if(index < 0 || index >= count())
+        return;
+
+    if (WebView* tab = qobject_cast<WebView*>(this->widget(index)))
+        tab->reload();
+}
+
+void TabWidget::onCurrentChanged(int index)
+{
+    if(index == _prevTabIndex)
+        return;
+
+    WebView* webView = getWebView(index);
+    if(!webView)
+        return;
+
+    if(WebView* oldWebView = getWebView(_prevTabIndex))
+    {
+//        disconnect(oldWebView, SIGNAL(statusBarMessage(QString)),
+//                this, SIGNAL(statusBarMessage(QString)));
+        disconnect(oldWebView, SIGNAL(loadProgress(int)),
+                this, SIGNAL(loadProgress(int)));
+    }
+//    connect(webView, SIGNAL(statusBarMessage(QString)), this, SIGNAL(statusBarMessage(QString)));
+    connect(webView, SIGNAL(loadProgress(int)),         this, SIGNAL(loadProgress(int)));
+
+    emit currentTitleChanged(webView->title());
+    emit historyChanged();
+    emit loadProgress(webView->getProgress());
+
+    _prevTabIndex = index;
+}
+
+WebView* TabWidget::onNewTab()
 {
     WebView* webView = new WebView;
-    webView->setRole(role);
 
     connect(webView, SIGNAL(loadStarted()),         this, SLOT(onWebViewLoadStarted()));
     connect(webView, SIGNAL(loadFinished(bool)),    this, SLOT(onWebViewIconChanged()));
     connect(webView, SIGNAL(iconChanged()),         this, SLOT(onWebViewIconChanged()));
     connect(webView, SIGNAL(titleChanged(QString)), this, SLOT(onWebViewTitleChanged(QString)));
-    connect(webView, SIGNAL(urlChanged(QUrl)),      this, SLOT(onWebViewUrlChanged(QUrl)));
-    connect(webView, SIGNAL(apiSearch(APIInfo)),    this, SLOT(onAPISearch(APIInfo)));
-    connect(webView, SIGNAL(linkClicked(QUrl)),     this, SIGNAL(linkClicked(QUrl)));
+    connect(webView, SIGNAL(apiSearch(API)),    this, SLOT(onAPISearch(API)));
 
     connect(webView->page(), SIGNAL(linkHovered(QString,QString,QString)),
             this, SIGNAL(linkHovered(QString)));
@@ -224,7 +137,6 @@ WebView* TabWidget::onNewTab(WebView::PageRole role)
 
     if(count() == 1)
         onCurrentChanged(currentIndex());
-    emit tabsChanged();
     return webView;
 }
 
@@ -235,22 +147,22 @@ void TabWidget::onReloadAllTabs()
             webView->reload();
 }
 
-void TabWidget::onAPISearch(const APIInfo& apiInfo)
+void TabWidget::onAPISearch(const API& api)
 {
     SearchDlg dlg(this);
-    dlg.setQuery(apiInfo.toString() + " ");
+    dlg.setQuery(api.toString() + " ");
     if(dlg.exec() == QDialog::Accepted)
-        setCurrentIndex(getSearchTabIndex("search?q=" + dlg.getQuery()));
+        setCurrentIndex(getSearchTabIndex(api, "search?q=" + dlg.getQuery()));
 }
 
 void TabWidget::onCloseOtherTabs(int index)
 {
-    if (-1 == index)
+    if(-1 == index)
         return;
-    for (int i = count() - 1; i > index; --i)
-        onCloseTab(i);
-    for (int i = index - 1; i >= 0; --i)
-        onCloseTab(i);
+
+    for(int i = count() - 1; i >= 0; --i)
+        if(i != index)
+            onCloseTab(i);
 }
 
 void TabWidget::onCloseAllTabs() {
@@ -258,39 +170,30 @@ void TabWidget::onCloseAllTabs() {
         onCloseTab(i);
 }
 
-// When index is -1 index chooses the current tab
 void TabWidget::onCloseTab(int index)
 {
     if (index < 0)
-        index = currentIndex();
+        index = currentIndex();  // When index is -1 index chooses the current tab
     if (index < 0 || index >= count())
         return;
-//    if(getTabRole(index) == DOC_ROLE || getTabRole(index) == SEARCH_ROLE)
-//        return;
 
-    QWidget* webView = widget(index);
+    widget(index)->deleteLater();
     removeTab(index);
-    webView->deleteLater();
-    emit tabsChanged();
-    if(count() == 0)
-        emit lastTabClosed();
 }
 
 void TabWidget::onWebViewLoadStarted()
 {
     WebView* webView = qobject_cast<WebView*>(sender());
     int index = getWebViewIndex(webView);
-    if (-1 != index) {
-        QIcon icon(QLatin1String(":/Images/Loading.gif"));
-        setTabIcon(index, icon);
-    }
+    if(-1 != index)
+        setTabIcon(index, QIcon(":/Images/Loading.gif"));
 }
 
 void TabWidget::onWebViewIconChanged()
 {
     WebView* webView = qobject_cast<WebView*>(sender());
     int index = getWebViewIndex(webView);
-    if (-1 != index)
+    if(-1 != index)
     {
         QIcon icon = QWebSettings::iconForUrl(webView->url());
         icon = icon.isNull() ? QIcon(":/Images/DefaultIcon.png").pixmap(16, 16)
@@ -303,21 +206,10 @@ void TabWidget::onWebViewTitleChanged(const QString& title)
 {
     WebView* webView = qobject_cast<WebView*>(sender());
     int index = getWebViewIndex(webView);
-    if (-1 != index)
+    if(-1 != index)
         setTabText(index, title);
-    if (currentIndex() == index)
+    if(currentIndex() == index)
         emit currentTitleChanged(title);
-}
-
-void TabWidget::onWebViewUrlChanged(const QUrl& url)
-{
-    WebView* webView = qobject_cast<WebView*>(sender());
-    int index = getWebViewIndex(webView);
-    if (currentIndex() == index)
-    {
-        emit currentUrlChanged(url);
-    }
-        //    emit tabsChanged();
 }
 
 void TabWidget::contextMenuEvent(QContextMenuEvent* event)

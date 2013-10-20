@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "TabWidget.h"
+#include "TabBar.h"
 #include "WebView.h"
 #include "OptionsDlg.h"
 #include <QMessageBox>
@@ -77,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(_tabWidget, SIGNAL(loadProgress(int)),            this, SLOT(onLoadProgress(int)));
     connect(_tabWidget, SIGNAL(currentTitleChanged(QString)), this, SLOT(onCurrentTitleChanged(QString)));
     connect(_tabWidget, SIGNAL(historyChanged()),             this, SLOT(onHistoryChanged()));
-    connect(_tabWidget, SIGNAL(statusBarMessage(QString)), statusBar(), SLOT(showMessage(QString)));
+//    connect(_tabWidget, SIGNAL(statusBarMessage(QString)), statusBar(), SLOT(showMessage(QString)));
     connect(_tabWidget, SIGNAL(linkHovered(QString)),      statusBar(), SLOT(showMessage(QString)));
 
     connect(ui.toolBarSearch, SIGNAL(hideMe()), ui.actionShowSearch, SLOT(toggle()));
@@ -209,6 +210,9 @@ void MainWindow::onReloadStop() {
 
 void MainWindow::onHelpful()
 {
+    WebView* webView = currentWebView();
+    API api = webView->getAPI();
+    QString query = webView->getQuery();
     _tabWidget->onCloseTab(_tabWidget->currentIndex());
 }
 

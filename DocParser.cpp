@@ -11,9 +11,9 @@
 ///       class details
 ///   </XXX>
 /// </ul>
-APIInfo JavaSE7Parser::parse(const QWebElement& e) const
+API JavaSE7Parser::parse(const QWebElement& e) const
 {
-    APIInfo result;
+    API result;
     if(e.isNull())
         return result;
 
@@ -74,11 +74,11 @@ DocParserFactory::DocParserFactory()
 
 
 ////////////////////////////////////////////////////////////////////////////////
-bool APIInfo::isEmpty() const {
+bool API::isEmpty() const {
     return _methodName.isEmpty();
 }
 
-QString APIInfo::toString() const
+QString API::toString() const
 {
     QString result = _libName + " " + _className;
     if(_className != _methodName)  // constructor has the same name as class

@@ -10,16 +10,10 @@ class WebPage : public QWebPage
 
 public:
     WebPage(QObject* parent = 0);
-    void setKeyboardModifiers(Qt::KeyboardModifiers modifiers) { _keyboardModifiers = modifiers; }
-    void setPressedButtons   (Qt::MouseButtons      buttons)   { _pressedButtons    = buttons;   }
 
 protected:
     bool acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type);
     QWebPage* createWindow(QWebPage::WebWindowType type);
-
-private:
-    Qt::KeyboardModifiers _keyboardModifiers;
-    Qt::MouseButtons      _pressedButtons;
 };
 
 class WebView : public QWebView
@@ -31,10 +25,14 @@ public:
 
 public:
     WebView(QWidget* parent = 0);
-    WebPage* getWebPage()  const { return _page; }
+    WebPage* getWebPage()  const { return _page;     }
     int      getProgress() const { return _progress; }
-    PageRole getRole()     const { return _role; }
-    void     setRole(PageRole role) { _role = role; }
+    PageRole getRole()     const { return _role;     }
+    API      getAPI()      const { return _api;      }
+    QString  getQuery()    const { return _query;    }
+    void     setRole (PageRole role)        { _role  = role;  }
+    void     setAPI  (const API& api)       { _api   = api;   }
+    void     setQuery(const QString& query) { _query = query; }
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
@@ -47,13 +45,16 @@ private slots:
     void onProgress(int progress) { _progress = progress; }
 
 signals:
-    void apiSearch(const APIInfo& apiInfo);
+    void apiSearch(const API& api);
 
 private:
     WebPage* _page;
-    APIInfo  _apiInfo;
     int      _progress;
     PageRole _role;
+    API      _api;
+    QString  _query;
+    Qt::KeyboardModifiers _keyboardModifiers;
+    Qt::MouseButtons      _pressedButtons;
 };
 
 #endif

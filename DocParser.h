@@ -4,12 +4,13 @@
 #include <QMetaType>
 #include <QString>
 
-struct APIInfo
+struct API
 {
     QString _libName;
     QString _packageName;
     QString _className;
     QString _methodName;
+//    QString _question;        // query terms without context
 
     bool    isEmpty()  const;
     QString toString() const;
@@ -18,18 +19,18 @@ struct APIInfo
 class QWebElement;
 
 //////////////////////////////////////////////////////////////////////
-// parses the web element clicked and finds the APIName
+// parses the web element clicked and finds the context (api) of the click
 class IDocParser
 {
 public:
-    virtual APIInfo parse(const QWebElement& e) const = 0;
+    virtual API parse(const QWebElement& e) const = 0;
     virtual ~IDocParser() {}
 };
 
 class JavaSE7Parser : public IDocParser
 {
 public:
-    APIInfo parse(const QWebElement& e) const;
+    API parse(const QWebElement& e) const;
     static QByteArray getLibName();
 };
 
