@@ -8,6 +8,7 @@
 #include <QWebHitTestResult>
 #include <QNetworkReply>
 #include <QWebElement>
+#include <QSettings>
 
 WebPage::WebPage(QObject* parent)
     : QWebPage(parent) {}
@@ -42,6 +43,18 @@ WebView::WebView(QWidget* parent)
 {
     setPage(_page);
     connect(_page, SIGNAL(loadProgress(int)), this, SLOT(onProgress(int)));
+
+    QSettings settings("FQAsBrowser.ini", QSettings::IniFormat, this);
+    setZoomFactor(settings.value("ZoomFactor").toReal());
+}
+
+void WebView::setZoomFactor(qreal factor)
+{
+    if(factor <= 0)
+        factor = 1.0;
+    QWebView::setZoomFactor(factor);
+    QSettings settings("FQAsBrowser.ini", QSettings::IniFormat, this);
+    settings.setValue("ZoomFactor", factor);
 }
 
 void WebView::contextMenuEvent(QContextMenuEvent *event)
@@ -71,12 +84,11 @@ void WebView::contextMenuEvent(QContextMenuEvent *event)
 void WebView::wheelEvent(QWheelEvent *event)
 {
     // zoom with wheel
-    if(QApplication::keyboardModifiers() & Qt::ControlModifier) {
-        int numDegrees = event->delta() / 8;
-        int numSteps = numDegrees / 15;
-        setTextSizeMultiplier(textSizeMultiplier() + numSteps * 0.1);
-        event->accept();
-        return;
+    if(QApplication::keyboardModifiers() & Qt::ControlModifier)
+    {
+        int numDegrees = event->angleDelta().y() / 8;   // see doc for angleDelta()
+        setZoomFactor(zoomFactor() + numDegrees /150);
+        return event->accept();
     }
     QWebView::wheelEvent(event);
 }

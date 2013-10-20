@@ -33,6 +33,7 @@ public:
     void     setRole (PageRole role)        { _role  = role;  }
     void     setAPI  (const API& api)       { _api   = api;   }
     void     setQuery(const QString& query) { _query = query; }
+    void     setZoomFactor(qreal factor);
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
