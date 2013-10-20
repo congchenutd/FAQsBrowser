@@ -46,25 +46,6 @@ TabBar::TabBar(QWidget* parent)
     connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextMenu(QPoint)));
 }
 
-TabInfo TabBar::getTabInfo(int index) const {
-    return TabInfo::fromStringList(tabData(index).toStringList());
-}
-
-void TabBar::setTabInfo(int index, const TabInfo& info) {
-    setTabData(index, info.toStringList());
-}
-
-TabRole TabBar::getTabRole(int index) const {
-    return getTabInfo(index)._role;
-}
-
-void TabBar::setTabRole(int index, TabRole role)
-{
-    TabInfo info = getTabInfo(index);
-    info._role = role;
-    setTabInfo(index, info);
-}
-
 void TabBar::onContextMenu(const QPoint& position)
 {
     QMenu menu;
@@ -109,7 +90,8 @@ void TabBar::onReloadTab() {
 //////////////////////////////////////////////////////////////////////////////////////
 TabWidget::TabWidget(QWidget *parent)
     : QTabWidget(parent),
-      _tabBar(new TabBar(this))
+      _tabBar(new TabBar(this)),
+      _lastTabIndex(-1)
 {
     setElideMode(Qt::ElideRight);
     setTabBar(_tabBar);
@@ -138,24 +120,28 @@ void TabWidget::onReloadTab(int index)
 
 void TabWidget::onCurrentChanged(int index)
 {
-    WebView* webView = this->getWebView(index);
+    if(index == _lastTabIndex)
+        return;
+
+    WebView* webView = getWebView(index);
     if(!webView)
         return;
 
-//    WebView *oldWebView = this->webView(m_lineEdits->currentIndex());
-//    if (oldWebView) {
-//        disconnect(oldWebView, SIGNAL(statusBarMessage(QString)),
-//                this, SIGNAL(showStatusBarMessage(QString)));
-//        disconnect(oldWebView->page(), SIGNAL(linkHovered(QString,QString,QString)),
-//                this, SIGNAL(linkHovered(QString)));
-//        disconnect(oldWebView, SIGNAL(loadProgress(int)),
-//                this, SIGNAL(loadProgress(int)));
-//    }
+    if(WebView* oldWebView = getWebView(_lastTabIndex))
+    {
+        disconnect(oldWebView, SIGNAL(statusBarMessage(QString)),
+                this, SIGNAL(statusBarMessage(QString)));
+        disconnect(oldWebView, SIGNAL(loadProgress(int)),
+                this, SIGNAL(loadProgress(int)));
+    }
     connect(webView, SIGNAL(statusBarMessage(QString)), this, SIGNAL(statusBarMessage(QString)));
     connect(webView, SIGNAL(loadProgress(int)),         this, SIGNAL(loadProgress(int)));
 
     emit currentTitleChanged(webView->title());
     emit historyChanged();
+    emit loadProgress(webView->getProgress());
+
+    _lastTabIndex = index;
 }
 
 WebView* TabWidget::getCurrentWebView() const {
@@ -164,20 +150,21 @@ WebView* TabWidget::getCurrentWebView() const {
 
 WebView* TabWidget::getWebView(int index) const
 {
-    QWidget* widget = this->widget(index);
-    if(WebView* webView = qobject_cast<WebView*>(widget))
+//    if(index < 0)
+//        return 0;
+    if(WebView* webView = qobject_cast<WebView*>(widget(index)))
         return webView;
 
     // optimization to delay creating the first webview
-    if (count() == 1)
-    {
-        TabWidget* that = const_cast<TabWidget*>(this);
-        that->setUpdatesEnabled(false);
-        that->onNewTab();
-        that->onCloseTab(0);
-        that->setUpdatesEnabled(true);
-        return getCurrentWebView();
-    }
+//    if(count() == 1)
+//    {
+//        TabWidget* that = const_cast<TabWidget*>(this);
+//        that->setUpdatesEnabled(false);
+//        that->onNewTab();
+//        that->onCloseTab(0);
+//        that->setUpdatesEnabled(true);
+//        return getCurrentWebView();
+//    }
     return 0;
 }
 
@@ -187,45 +174,40 @@ int TabWidget::getWebViewIndex(WebView* webView) const {
 
 int TabWidget::getDocTabIndex()
 {
-    // find existing doc tab
+    // find existing doc page
     for(int i = 0; i < count(); ++i)
-        if(getTabRole(i) == DOC_ROLE)
+        if(getWebView(i)->getRole() == WebView::DOC_ROLE)
             return i;
 
     // or create a new one
     WebView* webView = onNewTab();
     webView->load(QUrl("http://docs.oracle.com/javase/7/docs/api/"));
-    int index = getWebViewIndex(webView);
-    setTabRole(index, DOC_ROLE);
-    return index;
+    webView->setRole(WebView::DOC_ROLE);
+    return getWebViewIndex(webView);
 }
 
 int TabWidget::getSearchTabIndex(const QString& query)
 {
-    // find existing search tab
-    for(int i = 0; i < count(); ++i)
-        if(getTabRole(i) == SEARCH_ROLE)
-            return i;
+    // find existing search page
+    int i;
+    for(i = 0; i < count(); ++i)
+        if(getWebView(i)->getRole() == WebView::SEARCH_ROLE)
+            break;
 
-    // or create a new one
-    WebView* webView = onNewTab();
+    // create a new view or using the existing one
+    WebView* webView = (i == count()) ? onNewTab() : getWebView(i);
+
+    // load page
     webView->load(QUrl("http://www.google.com/" + query));
-    int index = getWebViewIndex(webView);
-    setTabRole(index, SEARCH_ROLE);
-    return index;
+    webView->setRole(WebView::SEARCH_ROLE);
+    return i;
 }
 
-void TabWidget::setTabRole(int index, TabRole role) {
-    _tabBar->setTabRole(index, role);
-}
-
-TabRole TabWidget::getTabRole(int index) const {
-    return _tabBar->getTabRole(index);
-}
-
-WebView* TabWidget::onNewTab(bool makeCurrent)
+WebView* TabWidget::onNewTab(WebView::PageRole role)
 {
     WebView* webView = new WebView;
+    webView->setRole(role);
+
     connect(webView, SIGNAL(loadStarted()),         this, SLOT(onWebViewLoadStarted()));
     connect(webView, SIGNAL(loadFinished(bool)),    this, SLOT(onWebViewIconChanged()));
     connect(webView, SIGNAL(iconChanged()),         this, SLOT(onWebViewIconChanged()));
@@ -240,8 +222,7 @@ WebView* TabWidget::onNewTab(bool makeCurrent)
     connect(webView->page()->action(QWebPage::Back),    SIGNAL(changed()), this, SIGNAL(historyChanged()));
 
     addTab(webView, tr("(Untitled)"));
-    if(makeCurrent)
-        setCurrentWidget(webView);
+    setCurrentWidget(webView);
 
     if(count() == 1)
         onCurrentChanged(currentIndex());
@@ -256,10 +237,10 @@ void TabWidget::onReloadAllTabs()
             webView->reload();
 }
 
-void TabWidget::onAPISearch(const APIInfo& apiName)
+void TabWidget::onAPISearch(const APIInfo& apiInfo)
 {
     SearchDlg dlg(this);
-    dlg.setQuery(apiName.toString() + " ");
+    dlg.setQuery(apiInfo.toString() + " ");
     if(dlg.exec() == QDialog::Accepted)
         setCurrentIndex(getSearchTabIndex("search?q=" + dlg.getQuery()));
 }
@@ -348,26 +329,4 @@ void TabWidget::contextMenuEvent(QContextMenuEvent* event)
         return;
     }
     QTabWidget::contextMenuEvent(event);
-}
-
-//////////////////////////////////////////////////////////////////////////////
-QStringList TabInfo::toStringList() const
-{
-    return QStringList() << QString::number(_role)
-                         << _context
-                         << _query
-                         << (_success ? "true" : "false");
-}
-
-TabInfo TabInfo::fromStringList(const QStringList& list)
-{
-    TabInfo result;
-    if(list.length() == 4)
-    {
-        result._role    = (TabRole)list.at(0).toInt();
-        result._context = list.at(1);
-        result._query   = list.at(2);
-        result._success = list.at(3) == "true";
-    }
-    return result;
 }

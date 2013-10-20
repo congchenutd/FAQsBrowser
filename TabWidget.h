@@ -1,63 +1,7 @@
-/****************************************************************************
-**
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
-**
-** This file is part of the demonstration applications of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
-**
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-**
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
-** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 #ifndef TABWIDGET_H
 #define TABWIDGET_H
 
 #include <QTabBar>
-
-class WebView;
-
-typedef enum {NULL_ROLE, DOC_ROLE, SEARCH_ROLE, WEB_ROLE} TabRole;
-
-struct TabInfo
-{
-    TabRole _role;
-    QString _context;
-    QString _query;
-    bool    _success;
-
-    QStringList toStringList() const;
-    static TabInfo fromStringList(const QStringList& list);
-};
 
 class TabBar : public QTabBar
 {
@@ -73,12 +17,6 @@ signals:
 
 public:
     TabBar(QWidget* parent = 0);
-
-    TabInfo getTabInfo(int index) const;
-    void    setTabInfo(int index, const TabInfo& info);
-
-    TabRole getTabRole(int index) const;
-    void    setTabRole(int index, TabRole role);
 
     // for MainWindow to add to its menu
     QAction* getActionNew()         const { return _actionNew;         }
@@ -108,6 +46,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////
 #include <QTabWidget>
+#include "WebView.h"
 
 struct APIInfo;
 
@@ -140,23 +79,21 @@ public:
     int getDocTabIndex();
     int getSearchTabIndex(const QString& query = QString());
 
-    TabRole getTabRole(int index) const;
-    void    setTabRole(int index, TabRole role);
-
 public slots:
-    WebView* onNewTab(bool makeCurrent = true);
-    void onCloseTab(int index = -1);
-    void onCloseOtherTabs(int index);
-    void onCloseAllTabs();
-    void onReloadTab(int index = -1);
-    void onReloadAllTabs();
-    void onAPISearch(const APIInfo& apiName);
+    WebView* onNewTab(WebView::PageRole role = WebView::NULL_ROLE);
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
 
 private slots:
+    void onCloseTab(int index = -1);
+    void onCloseOtherTabs(int index);
+    void onCloseAllTabs();
+    void onReloadTab(int index = -1);
+    void onReloadAllTabs();
+    void onAPISearch(const APIInfo& apiInfo);
     void onCurrentChanged(int index);
+
     void onWebViewLoadStarted();
     void onWebViewIconChanged();
     void onWebViewTitleChanged(const QString &title);
@@ -164,6 +101,7 @@ private slots:
 
 private:
     TabBar* _tabBar;
+    int     _lastTabIndex;
 };
 
 #endif // TABWIDGET_H

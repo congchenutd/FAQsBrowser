@@ -14,12 +14,11 @@ WebPage::WebPage(QObject* parent)
 
 bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type)
 {
-    // ctrl or shift or middle button open in new tab
-    if (type == QWebPage::NavigationTypeLinkClicked
-        && (_keyboardModifiers & Qt::ControlModifier ||
-            _keyboardModifiers & Qt::ShiftModifier   ||
-            _pressedButtons == Qt::MidButton)) {
-        MainWindow::getInstance()->getTabWidget()->onNewTab()->load(request);
+    // links on the search page open in new tab
+    if(type == QWebPage::NavigationTypeLinkClicked &&
+       static_cast<WebView*>(view())->getRole() == WebView::SEARCH_ROLE)
+    {
+        MainWindow::getInstance()->getTabWidget()->onNewTab(WebView::RESULT_ROLE)->load(request);
         return false;
     }
     return QWebPage::acceptNavigationRequest(frame, request, type);
@@ -38,6 +37,8 @@ WebView::WebView(QWidget* parent)
 {
     setPage(_page);
 //    page()->setForwardUnsupportedContent(true);
+
+    connect(_page, SIGNAL(loadProgress(int)), this, SLOT(onProgress(int)));
 }
 
 void WebView::contextMenuEvent(QContextMenuEvent *event)

@@ -27,8 +27,14 @@ class WebView : public QWebView
     Q_OBJECT
 
 public:
+    typedef enum {NULL_ROLE, DOC_ROLE, SEARCH_ROLE, RESULT_ROLE} PageRole;
+
+public:
     WebView(QWidget* parent = 0);
     WebPage* webPage() const { return _page; }
+    int getProgress() const { return _progress; }
+    PageRole getRole() const { return _role; }
+    void     setRole(PageRole role) { _role = role; }
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
@@ -38,6 +44,7 @@ protected:
 private slots:
     void onOpenLinkInNewTab();
     void onSearchAPI();
+    void onProgress(int progress) { _progress = progress; }
 
 signals:
     void apiSearch(const APIInfo& apiInfo);
@@ -45,6 +52,8 @@ signals:
 private:
     WebPage* _page;
     APIInfo  _apiInfo;
+    int      _progress;
+    PageRole _role;
 };
 
 #endif
