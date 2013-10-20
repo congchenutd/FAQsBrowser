@@ -31,9 +31,9 @@ public:
 
 public:
     WebView(QWidget* parent = 0);
-    WebPage* webPage() const { return _page; }
-    int getProgress() const { return _progress; }
-    PageRole getRole() const { return _role; }
+    WebPage* getWebPage()  const { return _page; }
+    int      getProgress() const { return _progress; }
+    PageRole getRole()     const { return _role; }
     void     setRole(PageRole role) { _role = role; }
 
 protected:

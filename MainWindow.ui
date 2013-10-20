@@ -114,6 +114,9 @@
    <addaction name="actionBack"/>
    <addaction name="actionForward"/>
    <addaction name="actionReloadStop"/>
+   <addaction name="separator"/>
+   <addaction name="actionHelpful"/>
+   <addaction name="actionNotHelpful"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="SearchBar" name="toolBarSearch">
@@ -228,6 +231,30 @@
   <action name="actionReloadStop">
    <property name="text">
     <string>Reload</string>
+   </property>
+  </action>
+  <action name="actionHelpful">
+   <property name="icon">
+    <iconset resource="Resource.qrc">
+     <normaloff>:/Images/Yes.png</normaloff>:/Images/Yes.png</iconset>
+   </property>
+   <property name="text">
+    <string>Helpful</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionNotHelpful">
+   <property name="icon">
+    <iconset resource="Resource.qrc">
+     <normaloff>:/Images/No.png</normaloff>:/Images/No.png</iconset>
+   </property>
+   <property name="text">
+    <string>Not helpful</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
  </widget>

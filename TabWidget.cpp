@@ -180,9 +180,8 @@ int TabWidget::getDocTabIndex()
             return i;
 
     // or create a new one
-    WebView* webView = onNewTab();
+    WebView* webView = onNewTab(WebView::DOC_ROLE);
     webView->load(QUrl("http://docs.oracle.com/javase/7/docs/api/"));
-    webView->setRole(WebView::DOC_ROLE);
     return getWebViewIndex(webView);
 }
 
@@ -195,11 +194,10 @@ int TabWidget::getSearchTabIndex(const QString& query)
             break;
 
     // create a new view or using the existing one
-    WebView* webView = (i == count()) ? onNewTab() : getWebView(i);
+    WebView* webView = (i == count()) ? onNewTab(WebView::SEARCH_ROLE) : getWebView(i);
 
     // load page
     webView->load(QUrl("http://www.google.com/" + query));
-    webView->setRole(WebView::SEARCH_ROLE);
     return i;
 }
 

@@ -7,5 +7,7 @@
         <file>Images/Question.png</file>
         <file>Images/Search.png</file>
         <file>Images/Home.png</file>
+        <file>Images/No.png</file>
+        <file>Images/Yes.png</file>
     </qresource>
 </RCC>

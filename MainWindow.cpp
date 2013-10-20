@@ -62,6 +62,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui.actionBack,       SIGNAL(triggered()), this, SLOT(onBack()));
     connect(ui.actionForward,    SIGNAL(triggered()), this, SLOT(onForward()));
     connect(ui.actionReloadStop, SIGNAL(triggered()), this, SLOT(onReloadStop()));
+    connect(ui.actionHelpful,    SIGNAL(triggered()), this, SLOT(onHelpful()));
+    connect(ui.actionNotHelpful, SIGNAL(triggered()), this, SLOT(onNotHelpful()));
+
     connect(ui.actionShowSearch,   SIGNAL(toggled(bool)), this, SLOT(onShowSearch  (bool)));
     connect(ui.actionZoomTextOnly, SIGNAL(toggled(bool)), this, SLOT(onZoomTextOnly(bool)));
     connect(ui.actionFullScreen,   SIGNAL(toggled(bool)), this, SLOT(onFullScreen  (bool)));
@@ -168,6 +171,12 @@ void MainWindow::onLoadProgress(int progress)
 void MainWindow::onCurrentTitleChanged(const QString& title) {
     setWindowTitle(title.isEmpty() ? tr("FAQs Browser")
                                    : tr("%1 - FAQs Browser").arg(title));
+
+    if(WebView* webView = currentWebView())
+    {
+        ui.actionHelpful   ->setVisible(webView->getRole() == WebView::RESULT_ROLE);
+        ui.actionNotHelpful->setVisible(webView->getRole() == WebView::RESULT_ROLE);
+    }
 }
 
 void MainWindow::onBack() {
@@ -196,6 +205,16 @@ void MainWindow::onReloadStop() {
         else
             webView->reload();
     }
+}
+
+void MainWindow::onHelpful()
+{
+    _tabWidget->onCloseTab(_tabWidget->currentIndex());
+}
+
+void MainWindow::onNotHelpful()
+{
+    _tabWidget->onCloseTab(_tabWidget->currentIndex());
 }
 
 WebView* MainWindow::currentWebView() const {

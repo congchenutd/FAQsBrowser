@@ -35,6 +35,8 @@ private slots:
     void onForward();
     void onHistoryChanged();
     void onReloadStop();
+    void onHelpful();
+    void onNotHelpful();
 
 private:
     WebView* currentWebView() const;

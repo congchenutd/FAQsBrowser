@@ -81,12 +81,12 @@ public:
 
 public slots:
     WebView* onNewTab(WebView::PageRole role = WebView::NULL_ROLE);
+    void onCloseTab(int index = -1);
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
 
 private slots:
-    void onCloseTab(int index = -1);
     void onCloseOtherTabs(int index);
     void onCloseAllTabs();
     void onReloadTab(int index = -1);
