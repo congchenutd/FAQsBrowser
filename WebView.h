@@ -38,7 +38,6 @@ public:
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
     void wheelEvent      (QWheelEvent* event);
-    void mousePressEvent (QMouseEvent* event);
 
 private slots:
     void onOpenLinkInNewTab();
@@ -54,8 +53,6 @@ private:
     PageRole _role;
     API      _api;
     QString  _query;
-    Qt::KeyboardModifiers _keyboardModifiers;
-    Qt::MouseButtons      _pressedButtons;
 };
 
 #endif

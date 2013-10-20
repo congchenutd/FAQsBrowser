@@ -57,7 +57,7 @@ void WebView::setZoomFactor(qreal factor)
     settings.setValue("ZoomFactor", factor);
 }
 
-void WebView::contextMenuEvent(QContextMenuEvent *event)
+void WebView::contextMenuEvent(QContextMenuEvent* event)
 {
     QWebHitTestResult hitTest = page()->mainFrame()->hitTestContent(event->pos());
     QMenu menu(this);
@@ -91,14 +91,6 @@ void WebView::wheelEvent(QWheelEvent *event)
         return event->accept();
     }
     QWebView::wheelEvent(event);
-}
-
-void WebView::mousePressEvent(QMouseEvent *event)
-{
-    // tell the page what keys/buttons are pressed for opening page in new tab
-    _keyboardModifiers = event->modifiers();
-    _pressedButtons    = event->buttons();
-    QWebView::mousePressEvent(event);
 }
 
 void WebView::onOpenLinkInNewTab() {
