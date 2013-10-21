@@ -28,19 +28,23 @@ void Connection::ping()
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
-void Connection::save(const API& api, const QString& query, const QString& answer)
+void Connection::save(const API& api, const QString& question,
+                      const QString& link, const QString& title)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
     Settings* setting = Settings::getInstance();
-    QString url = tr("http://%1:%2/?action=save&username=%3&api=%4&query=%5&answer=%6")
+    QString url = tr("http://%1:%2/?action=save&username=%3\
+                     &email=%4&api=%5&question=%6&link=%7&title=%8")
             .arg(setting->getServerIP())
             .arg(setting->getServerPort())
             .arg(setting->getUserName())
+            .arg(setting->getEmail())
             .arg(api.toTransfered())
-            .arg(query)
-            .arg(answer);
+            .arg(question)
+            .arg(link)
+            .arg(title);
     manager->get(QNetworkRequest(QUrl(url)));
 }
 

@@ -14,7 +14,8 @@ class Connection : public QObject
 public:
     static Connection* getInstance();
     void ping();
-    void save(const API& api, const QString& query, const QString& answer = QString());
+    void save(const API& api, const QString& question,
+              const QString& link = QString(), const QString& title = QString());
 
 private slots:
     void onPingReply(QNetworkReply* reply);

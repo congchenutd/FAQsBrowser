@@ -212,10 +212,11 @@ void MainWindow::onReloadStop() {
 void MainWindow::onHelpful()
 {
     WebView* webView = currentWebView();
-    API     api   = webView->getAPI();
-    QString query = webView->getQuery();
-    QString url   = webView->url().toString();
-    Connection::getInstance()->save(api, query, url);
+    API     api      = webView->getAPI();
+    QString query    = webView->getQuery();
+    QString link     = webView->url().toString();
+    QString title    = webView->title();
+    Connection::getInstance()->save(api, query, link, title);
 
     _tabWidget->onCloseTab(_tabWidget->currentIndex());
 }
