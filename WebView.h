@@ -2,19 +2,9 @@
 #define WEBVIEW_H
 
 #include <QWebView>
-#include "DocParser.h"
+#include "API.h"
 
-class WebPage : public QWebPage
-{
-    Q_OBJECT
-
-public:
-    WebPage(QObject* parent = 0);
-
-protected:
-    bool acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type);
-    QWebPage* createWindow(QWebPage::WebWindowType type);
-};
+class WebPage;
 
 class WebView : public QWebView
 {

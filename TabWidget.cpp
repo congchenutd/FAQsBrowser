@@ -76,7 +76,7 @@ int TabWidget::getSearchTabIndex(const API& api, const QString& query)
     webView->setRole(WebView::SEARCH_ROLE);
     webView->setAPI(api);
     webView->setQuery(query);
-    webView->load(QUrl("http://www.google.com/" + query));
+    webView->load(QUrl("http://www.google.com/search?q=" + query));
     return i;
 }
 
@@ -150,9 +150,9 @@ void TabWidget::onReloadAllTabs()
 void TabWidget::onAPISearch(const API& api)
 {
     SearchDlg dlg(this);
-    dlg.setQuery(api.toString() + " ");
+    dlg.setContext(api.toBeautified());
     if(dlg.exec() == QDialog::Accepted)
-        setCurrentIndex(getSearchTabIndex(api, "search?q=" + dlg.getQuery()));
+        setCurrentIndex(getSearchTabIndex(api, dlg.getQuery()));
 }
 
 void TabWidget::onCloseOtherTabs(int index)

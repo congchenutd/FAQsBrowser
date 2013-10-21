@@ -19,7 +19,11 @@ Main.cpp \
     SearchBar.cpp \
     DocParser.cpp \
     SearchDlg.cpp \
-    TabBar.cpp
+    TabBar.cpp \
+    WebPage.cpp \
+    API.cpp \
+    Connection.cpp \
+    Settings.cpp
 
 HEADERS  += MainWindow.h \
     TabWidget.h \
@@ -28,7 +32,11 @@ HEADERS  += MainWindow.h \
     SearchBar.h \
     DocParser.h \
     SearchDlg.h \
-    TabBar.h
+    TabBar.h \
+    WebPage.h \
+    API.h \
+    Connection.h \
+    Settings.h
 
 FORMS    += MainWindow.ui \
     OptionsDlg.ui \

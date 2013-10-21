@@ -15,7 +15,7 @@ public:
 
 private slots:
     void onPingServer();
-    void onPingReply(QNetworkReply* reply);
+    void onPingReply(bool alive);
 
 private:
     Ui::OptionsDlg ui;

@@ -1,51 +1,24 @@
-#include "MainWindow.h"
-#include "TabWidget.h"
 #include "WebView.h"
+#include "WebPage.h"
 #include "DocParser.h"
+#include "Settings.h"
 
+#include <QApplication>
 #include <QMenu>
 #include <QMouseEvent>
 #include <QWebHitTestResult>
 #include <QNetworkReply>
 #include <QWebElement>
-#include <QSettings>
+#include <QDebug>
 
-WebPage::WebPage(QObject* parent)
-    : QWebPage(parent) {}
-
-bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type)
-{
-    // links on the search page open in new tab
-    WebView* thisView = static_cast<WebView*>(view());
-    if(type == QWebPage::NavigationTypeLinkClicked &&
-       thisView->getRole() == WebView::SEARCH_ROLE)
-    {
-        WebView* newView = MainWindow::getInstance()->getTabWidget()->onNewTab();
-        newView->setRole (WebView::RESULT_ROLE);
-        newView->setAPI  (thisView->getAPI());    // transfer the attributes of a page
-        newView->setQuery(thisView->getQuery());
-        newView->load(request);
-        return false;
-    }
-    return QWebPage::acceptNavigationRequest(frame, request, type);
-}
-
-// always open in tab
-QWebPage* WebPage::createWindow(QWebPage::WebWindowType) {
-    return MainWindow::getInstance()->getTabWidget()->onNewTab()->page();
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
 WebView::WebView(QWidget* parent)
     : QWebView(parent),
       _page(new WebPage(this))
 {
     setPage(_page);
-    connect(_page, SIGNAL(loadProgress(int)), this, SLOT(onProgress(int)));
+    setZoomFactor(Settings::getInstance()->getZoomFactor());
 
-    QSettings settings("FQAsBrowser.ini", QSettings::IniFormat, this);
-    setZoomFactor(settings.value("ZoomFactor").toReal());
+    connect(_page, SIGNAL(loadProgress(int)), this, SLOT(onProgress(int)));
 }
 
 void WebView::setZoomFactor(qreal factor)
@@ -53,8 +26,7 @@ void WebView::setZoomFactor(qreal factor)
     if(factor <= 0)
         factor = 1.0;
     QWebView::setZoomFactor(factor);
-    QSettings settings("FQAsBrowser.ini", QSettings::IniFormat, this);
-    settings.setValue("ZoomFactor", factor);
+    Settings::getInstance()->setZoomFactor(factor);
 }
 
 void WebView::contextMenuEvent(QContextMenuEvent* event)
@@ -81,7 +53,7 @@ void WebView::contextMenuEvent(QContextMenuEvent* event)
     menu.exec(mapToGlobal(event->pos()));
 }
 
-void WebView::wheelEvent(QWheelEvent *event)
+void WebView::wheelEvent(QWheelEvent* event)
 {
     // zoom with wheel
     if(QApplication::keyboardModifiers() & Qt::ControlModifier)

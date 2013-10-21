@@ -74,14 +74,3 @@ DocParserFactory::DocParserFactory()
 
 
 ////////////////////////////////////////////////////////////////////////////////
-bool API::isEmpty() const {
-    return _methodName.isEmpty();
-}
-
-QString API::toString() const
-{
-    QString result = _libName + " " + _className;
-    if(_className != _methodName)  // constructor has the same name as class
-        result += " " + _methodName;
-    return result;
-}

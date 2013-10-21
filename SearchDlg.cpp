@@ -11,6 +11,6 @@ QString SearchDlg::getQuery() const {
     return ui.lineEdit->text();
 }
 
-void SearchDlg::setQuery(const QString& query) {
-    ui.lineEdit->setText(query);
+void SearchDlg::setContext(const QString& context) {
+    ui.lineEdit->setText(context + " ");
 }

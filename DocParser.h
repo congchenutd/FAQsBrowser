@@ -2,19 +2,7 @@
 #define DOCPARSER_H
 
 #include <QMetaType>
-#include <QString>
-
-struct API
-{
-    QString _libName;
-    QString _packageName;
-    QString _className;
-    QString _methodName;
-//    QString _question;        // query terms without context
-
-    bool    isEmpty()  const;
-    QString toString() const;
-};
+#include "API.h"
 
 class QWebElement;
 

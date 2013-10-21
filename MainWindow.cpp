@@ -3,6 +3,7 @@
 #include "TabBar.h"
 #include "WebView.h"
 #include "OptionsDlg.h"
+#include "Connection.h"
 #include <QMessageBox>
 #include <QWebSettings>
 #include <QProgressBar>
@@ -211,14 +212,20 @@ void MainWindow::onReloadStop() {
 void MainWindow::onHelpful()
 {
     WebView* webView = currentWebView();
-    API api = webView->getAPI();
+    API     api   = webView->getAPI();
     QString query = webView->getQuery();
+    QString url   = webView->url().toString();
+    Connection::getInstance()->save(api, query, url);
+
     _tabWidget->onCloseTab(_tabWidget->currentIndex());
 }
 
 void MainWindow::onNotHelpful()
 {
     _tabWidget->onCloseTab(_tabWidget->currentIndex());
+    WebView* webView = currentWebView();
+    API     api   = webView->getAPI();
+    QString query = webView->getQuery();
 }
 
 WebView* MainWindow::currentWebView() const {
