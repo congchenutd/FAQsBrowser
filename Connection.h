@@ -3,8 +3,8 @@
 
 #include <QString>
 #include <QObject>
-#include "API.h"
 
+struct API;
 class QNetworkReply;
 
 class Connection : public QObject
@@ -16,16 +16,18 @@ public:
     void ping();
     void save(const API& api, const QString& question,
               const QString& link = QString(), const QString& title = QString());
+    void query(const API& api);
 
 private slots:
-    void onPingReply(QNetworkReply* reply);
+    void onPingReply (QNetworkReply* reply);
+    void onQueryReply(QNetworkReply* reply);
 
 signals:
     void pingReply(bool alive);
+    void queryReply(const QJsonObject&);
 
 private:
     static Connection* _instance;
-//    QNetworkAccessManager* _accessManager;
 };
 
 #endif // CONNECTION_H

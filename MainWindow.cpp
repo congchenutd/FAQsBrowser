@@ -223,10 +223,12 @@ void MainWindow::onHelpful()
 
 void MainWindow::onNotHelpful()
 {
-    _tabWidget->onCloseTab(_tabWidget->currentIndex());
     WebView* webView = currentWebView();
     API     api   = webView->getAPI();
     QString query = webView->getQuery();
+    Connection::getInstance()->save(api, query);
+
+    _tabWidget->onCloseTab(_tabWidget->currentIndex());
 }
 
 WebView* MainWindow::currentWebView() const {
