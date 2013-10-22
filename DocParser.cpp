@@ -44,6 +44,10 @@ API JavaSE7Parser::getAPI(const QWebElement& e) const
     return result;
 }
 
+QString JavaSE7Parser::getFullClassName(const QWebElement& e) const {
+    return e.document().findAll("ul[class=inheritance]").last().toPlainText();
+}
+
 QByteArray JavaSE7Parser::getLibName() { return "Java SE 7"; }
 
 

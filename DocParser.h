@@ -11,14 +11,16 @@ class QWebElement;
 class IDocParser
 {
 public:
-    virtual API getAPI(const QWebElement& e) const = 0;
+    virtual API     getAPI          (const QWebElement& e) const = 0;
+    virtual QString getFullClassName(const QWebElement& e) const = 0;
     virtual ~IDocParser() {}
 };
 
 class JavaSE7Parser : public IDocParser
 {
 public:
-    API getAPI(const QWebElement& e) const;
+    API     getAPI          (const QWebElement& e) const;
+    QString getFullClassName(const QWebElement& e) const;
     static QByteArray getLibName();
 };
 
