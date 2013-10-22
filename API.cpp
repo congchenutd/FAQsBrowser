@@ -1,24 +1,31 @@
 #include "API.h"
 #include <QStringList>
 
+QString API::getMethodName() const {
+    return QString(_method).remove(QRegExp("\\(.*\\)"));
+}
+
 bool API::isEmpty() const {
-    return _methodName.isEmpty();
+    return getMethod().isEmpty();
 }
 
 QString API::toBeautified() const
 {
-    QString result = _libName + " " + _className;
-    if(_className != _methodName)  // constructor has the same name as class
-        result += " " + _methodName;
+    QString result = getLibrary() + " " + getClass();
+    if(getClass() != getMethodName())  // constructor has the same name as class
+        result += " " + getMethodName();
     return result;
 }
 
-QString API::toTransfered() const
-{
-    QStringList sections;
-    sections << _libName
-             << _packageName
-             << _className
-             << _methodName;
-    return sections.join(";");
+QString API::toFullString() const {
+    return (QStringList() << getLibrary()
+                          << getPackage()
+                          << getClass()
+                          << getMethod()).join(";");
+}
+
+QString API::toClassString() const {
+    return (QStringList() << getLibrary()
+                          << getPackage()
+                          << getClass()).join(";");
 }

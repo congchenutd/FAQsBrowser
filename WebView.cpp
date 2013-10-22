@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QWebElement>
 
 WebView::WebView(QWidget* parent)
     : QWebView(parent),
@@ -90,13 +91,19 @@ void WebView::mousePressEvent(QMouseEvent* event)
 void WebView::onQueryReply(const QJsonObject& reply)
 {
     if(!reply.isEmpty())
-        QMessageBox::information(this, tr("FAQs"), QJsonDocument(reply).toJson());
+    {
+        QJsonObject obj = QJsonDocument(reply).object();
+        QString api = obj.value("api").toString();
+        if(api.isEmpty())
+            return;
+        QMessageBox::information(this, tr("FAQs"), api);
+    }
 }
 
 API WebView::parseAPI(const QPoint& pos) const
 {
     QWebHitTestResult hitTest = page()->mainFrame()->hitTestContent(pos);
     IDocParser* parser = DocParserFactory::getInstance()->getParser("Java SE 7");
-    return parser != 0 ? parser->parse(hitTest.enclosingBlockElement())
+    return parser != 0 ? parser->getAPI(hitTest.enclosingBlockElement())
                        : API();
 }

@@ -5,7 +5,7 @@
 #include "WebView.h"
 
 class TabBar;
-struct API;
+class API;
 
 class TabWidget : public QTabWidget
 {

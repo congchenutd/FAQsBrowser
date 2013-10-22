@@ -52,7 +52,7 @@ void Connection::save(const API& api, const QString& question,
             .arg(setting->getServerPort())
             .arg(setting->getUserName())
             .arg(setting->getEmail())
-            .arg(api.toTransfered())
+            .arg(api.toFullString())
             .arg(question)
             .arg(link)
             .arg(title);
@@ -71,7 +71,7 @@ void Connection::query(const API& api)
             .arg(setting->getServerIP())
             .arg(setting->getServerPort())
             .arg(setting->getUserName())
-            .arg(api.toTransfered());
+            .arg(api.toClassString());
     manager->get(QNetworkRequest(QUrl(url)));
 }
 

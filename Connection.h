@@ -4,7 +4,7 @@
 #include <QString>
 #include <QObject>
 
-struct API;
+class API;
 class QNetworkReply;
 
 class Connection : public QObject

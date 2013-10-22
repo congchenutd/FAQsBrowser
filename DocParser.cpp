@@ -11,7 +11,7 @@
 ///       class details
 ///   </XXX>
 /// </ul>
-API JavaSE7Parser::parse(const QWebElement& e) const
+API JavaSE7Parser::getAPI(const QWebElement& e) const
 {
     API result;
     if(e.isNull())
@@ -28,18 +28,17 @@ API JavaSE7Parser::parse(const QWebElement& e) const
     p = p.previousSibling();     // the tag above the "ul" is an "a" tag for class name
     if(p.tagName() == "A")
     {
-        // full class name is found at the last ul tag a class=inheritance attribute
+        // full class name is found at the last ul tag with a class=inheritance attribute
         QString fullClassName = e.document().findAll("ul[class=inheritance]").last().toPlainText();
 
-        // the class name from the full class name and removing generic things like <T>
-        result._className   = fullClassName.split(".").last().remove(QRegExp("<.*>"));
+        // get the class name from the full class name and remove generic things like <T>
+        result.setClass(fullClassName.split(".").last().remove(QRegExp("<.*>")));
 
         // the package name is what remains after removing .classname
-        result._packageName = fullClassName.remove(QRegExp("\\.\\w+$"));
-        result._libName     = getLibName();
+        result.setPackage(fullClassName.remove(QRegExp("\\.\\w+$")));
 
-        // the parameter list of a method is removed
-        result._methodName  = p.attribute("name").remove(QRegExp("\\(.*\\)"));
+        result.setMethod(p.attribute("name"));
+        result.setLibrary(getLibName());
     }
 
     return result;
