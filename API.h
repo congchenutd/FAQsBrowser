@@ -3,27 +3,27 @@
 
 #include <QString>
 
+// representing the context of a search, ie method or attribute
 class API
 {
 public:
-    void setLibrary   (const QString& lib)    { _library = lib; }
-    void setFullClass (const QString& cls)    { _class   = cls; }
-    void setFullMethod(const QString& method);
+    void setLibrary        (const QString& lib)    { _library   = lib;    }
+    void setClassSignature (const QString& cls)    { _classSig  = cls;    }
+    void setMethodSignature(const QString& method) { _methodSig = method; }
 
-    QString getLibrary()     const { return _library; }
-    QString getShortClass()  const;
-    QString getFullClass()   const { return _class; }
-    QString getFullMethod()  const { return _method;  }
-    QString getShortMethod() const;
+    QString getLibrary()         const { return _library;    }
+    QString getClassSignature()  const { return _classSig;   }
+    QString getMethodSignature() const { return _methodSig;  }
+    QString getClassName()  const;
+    QString getMethodName() const;
 
-    QString toQueryString() const;  // e.g., Java SE 7 ensureCapacity
-    QString toFullString()  const;  // e.g., Java SE 7;java.util.ArrayList.ensureCapacity(int)
-    QString toClassString() const;  // e.g., Java SE 7;java.util.ArrayList
+    QString toQueryString()  const;  // e.g., Java SE 7 ensureCapacity
+    QString toAPISignature() const;  // e.g., Java SE 7;java.util.ArrayList.ensureCapacity(int)
 
 private:
     QString _library;
-    QString _class;
-    QString _method;
+    QString _classSig;      // package.class
+    QString _methodSig;     // method(params)
 };
 
 #endif // API_H

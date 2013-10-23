@@ -1,33 +1,27 @@
 #include "API.h"
 #include <QStringList>
 
-void API::setFullMethod(const QString &method) { _method  = method; }
 
-QString API::getShortClass() const {
-    return getFullClass().section(".", -1, -1).remove(QRegExp("<.*>"));
+
+QString API::getClassName() const {
+    return getClassSignature().section(".", -1, -1).remove(QRegExp("<.*>"));
     // e.g., java.util.ArrayList<E> -> ArrayList
 }
 
-QString API::getShortMethod() const {
-    return getFullMethod().remove(QRegExp("\\(.*\\)"));  // remove parameters
+QString API::getMethodName() const {
+    return getMethodSignature().remove(QRegExp("\\(.*\\)"));  // remove parameters
 }
 
 QString API::toQueryString() const
 {
-    QString result = getLibrary() + " " + getShortClass();
-    if(getShortClass() != getShortMethod())  // add short non-cstr method name
-        result += " " + getShortMethod();
+    QString result = getLibrary() + " " + getClassName();
+    if(getClassName() != getMethodName())  // add short non-cstr method name
+        result += " " + getMethodName();
     return result;
 }
 
-QString API::toFullString() const {
-    return (getLibrary().isEmpty() || getFullClass().isEmpty() || getFullMethod().isEmpty())
+QString API::toAPISignature() const {
+    return (getLibrary().isEmpty() || getClassSignature().isEmpty() || getMethodSignature().isEmpty())
             ? QString()
-            : getLibrary() + ";" + getFullClass() + "." + getFullMethod();
-}
-
-QString API::toClassString() const {
-    return (getLibrary().isEmpty() || getFullClass().isEmpty())
-            ? QString()
-            : getLibrary() + ";" + getFullClass();
+            : getLibrary() + ";" + getClassSignature() + "." + getMethodSignature();
 }

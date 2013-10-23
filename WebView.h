@@ -5,6 +5,7 @@
 #include "API.h"
 
 class WebPage;
+class IDocVisitor;
 
 class WebView : public QWebView
 {
@@ -39,16 +40,12 @@ signals:
     void apiSearch(const API& api);
 
 private:
-    API parseAPI(const QPoint& pos) const;
-    QString createFAQsHTML(const QJsonObject& json) const;
-    QWebElement getRootElement();  // root element of the classFrame
-
-private:
     WebPage* _page;
     int      _progress;
     PageRole _role;
-    API      _api;
+    API      _api;             // api currently being read
     QString  _query;
+    IDocVisitor* _visitor;
 };
 
 #endif

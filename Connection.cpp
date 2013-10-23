@@ -7,7 +7,6 @@
 #include <QUrl>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QDebug>
 #include <QJsonArray>
 
 Connection* Connection::_instance = 0;
@@ -27,9 +26,9 @@ void Connection::ping()
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
     QString url = tr("http://%1:%2/?action=ping&username=%3")
-            .arg(Settings::getInstance()->getServerIP())
-            .arg(Settings::getInstance()->getServerPort())
-            .arg(Settings::getInstance()->getUserName());
+            .arg(_settings->getServerIP())
+            .arg(_settings->getServerPort())
+            .arg(_settings->getUserName());
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
@@ -39,40 +38,37 @@ void Connection::onPingReply(QNetworkReply* reply)
     emit pingReply(status == 200);
 }
 
-void Connection::save(const API& api, const QString& question,
-                      const QString& link, const QString& title)
+void Connection::save(const QString& apiSignature, const QString& question,
+                      const QString& link,         const QString& title)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
-    Settings* setting = Settings::getInstance();
     QString url = tr("http://%1:%2/?action=save&username=%3\
                      &email=%4&api=%5&question=%6&link=%7&title=%8")
-            .arg(setting->getServerIP())
-            .arg(setting->getServerPort())
-            .arg(setting->getUserName())
-            .arg(setting->getEmail())
-            .arg(api.toFullString())
+            .arg(_settings->getServerIP())
+            .arg(_settings->getServerPort())
+            .arg(_settings->getUserName())
+            .arg(_settings->getEmail())
+            .arg(apiSignature)
             .arg(question)
             .arg(link)
             .arg(title);
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
-void Connection::query(const QString& libraryName, const QString& fullClassName)
+void Connection::query(const QString& libraryName, const QString& classSignature)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished    (QNetworkReply*)),
             this,    SLOT  (onQueryReply(QNetworkReply*)));
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
-    Settings* setting = Settings::getInstance();
     QString url = tr("http://%1:%2/?action=query&username=%3&class=%4")
-            .arg(setting->getServerIP())
-            .arg(setting->getServerPort())
-            .arg(setting->getUserName())
-            .arg(libraryName + ";" + fullClassName);
-    qDebug() << url;
+            .arg(_settings->getServerIP())
+            .arg(_settings->getServerPort())
+            .arg(_settings->getUserName())
+            .arg(libraryName + ";" + classSignature);
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
@@ -88,3 +84,7 @@ void Connection::onQueryReply(QNetworkReply* reply)
             emit queryReply(APIs);
     }
 }
+
+Connection::Connection()
+    : _settings(Settings::getInstance())
+{}

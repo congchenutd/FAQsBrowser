@@ -17,7 +17,7 @@ Main.cpp \
     WebView.cpp \
     OptionsDlg.cpp \
     SearchBar.cpp \
-    DocParser.cpp \
+    DocVisitor.cpp \
     SearchDlg.cpp \
     TabBar.cpp \
     WebPage.cpp \
@@ -30,7 +30,7 @@ HEADERS  += MainWindow.h \
     WebView.h \
     OptionsDlg.h \
     SearchBar.h \
-    DocParser.h \
+    DocVisitor.h \
     SearchDlg.h \
     TabBar.h \
     WebPage.h \
