@@ -16,7 +16,7 @@ public:
     void ping();
     void save(const API& api, const QString& question,
               const QString& link = QString(), const QString& title = QString());
-    void query(const API& api);
+    void query(const QString& libraryName, const QString& fullClassName);
 
 private slots:
     void onPingReply (QNetworkReply* reply);
@@ -24,7 +24,7 @@ private slots:
 
 signals:
     void pingReply(bool alive);
-    void queryReply(const QJsonObject&);
+    void queryReply(const QJsonArray&);
 
 private:
     static Connection* _instance;

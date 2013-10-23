@@ -1,31 +1,33 @@
 #include "API.h"
 #include <QStringList>
 
-QString API::getMethodName() const {
-    return QString(_method).remove(QRegExp("\\(.*\\)"));
+void API::setFullMethod(const QString &method) { _method  = method; }
+
+QString API::getShortClass() const {
+    return getFullClass().section(".", -1, -1).remove(QRegExp("<.*>"));
+    // e.g., java.util.ArrayList<E> -> ArrayList
 }
 
-bool API::isEmpty() const {
-    return getMethod().isEmpty();
+QString API::getShortMethod() const {
+    return getFullMethod().remove(QRegExp("\\(.*\\)"));  // remove parameters
 }
 
-QString API::toBeautified() const
+QString API::toQueryString() const
 {
-    QString result = getLibrary() + " " + getClass();
-    if(getClass() != getMethodName())  // constructor has the same name as class
-        result += " " + getMethodName();
+    QString result = getLibrary() + " " + getShortClass();
+    if(getShortClass() != getShortMethod())  // add short non-cstr method name
+        result += " " + getShortMethod();
     return result;
 }
 
 QString API::toFullString() const {
-    return (QStringList() << getLibrary()
-                          << getPackage()
-                          << getClass()
-                          << getMethod()).join(";");
+    return (getLibrary().isEmpty() || getFullClass().isEmpty() || getFullMethod().isEmpty())
+            ? QString()
+            : getLibrary() + ";" + getFullClass() + "." + getFullMethod();
 }
 
 QString API::toClassString() const {
-    return (QStringList() << getLibrary()
-                          << getPackage()
-                          << getClass()).join(";");
+    return (getLibrary().isEmpty() || getFullClass().isEmpty())
+            ? QString()
+            : getLibrary() + ";" + getFullClass();
 }

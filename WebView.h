@@ -28,19 +28,20 @@ public:
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
     void wheelEvent      (QWheelEvent* event);
-    void mousePressEvent (QMouseEvent* event);
 
 private slots:
     void onOpenLinkInNewTab();
     void onSearchAPI();
-    void onProgress(int progress) { _progress = progress; }
-    void onQueryReply(const QJsonObject& reply);
+    void onProgress(int progress);
+    void onQueryReply(const QJsonArray& APIs);
 
 signals:
     void apiSearch(const API& api);
 
 private:
     API parseAPI(const QPoint& pos) const;
+    QString createFAQsHTML(const QJsonObject& json) const;
+    QWebElement getRootElement();  // root element of the classFrame
 
 private:
     WebPage* _page;

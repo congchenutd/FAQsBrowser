@@ -6,24 +6,22 @@
 class API
 {
 public:
-    void setLibrary(const QString& lib)    { _library = lib; }
-    void setPackage(const QString& pkg)    { _package = pkg; }
-    void setClass  (const QString& cls)    { _class   = cls; }
-    void setMethod (const QString& method) { _method  = method; }
-    QString getLibrary() const { return _library; }
-    QString getPackage() const { return _package; }
-    QString getClass  () const { return _class;   }
-    QString getMethod () const { return _method;  }
-    QString getMethodName() const;
+    void setLibrary   (const QString& lib)    { _library = lib; }
+    void setFullClass (const QString& cls)    { _class   = cls; }
+    void setFullMethod(const QString& method);
 
-    bool    isEmpty()       const;
-    QString toBeautified()  const;   // for SearchDlg
-    QString toFullString()  const;   // everything in a ; seperated string. used for save
-    QString toClassString() const;   // method removed. used for query
+    QString getLibrary()     const { return _library; }
+    QString getShortClass()  const;
+    QString getFullClass()   const { return _class; }
+    QString getFullMethod()  const { return _method;  }
+    QString getShortMethod() const;
+
+    QString toQueryString() const;  // e.g., Java SE 7 ensureCapacity
+    QString toFullString()  const;  // e.g., Java SE 7;java.util.ArrayList.ensureCapacity(int)
+    QString toClassString() const;  // e.g., Java SE 7;java.util.ArrayList
 
 private:
     QString _library;
-    QString _package;
     QString _class;
     QString _method;
 };

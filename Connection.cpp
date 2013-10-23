@@ -59,7 +59,7 @@ void Connection::save(const API& api, const QString& question,
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
-void Connection::query(const API& api)
+void Connection::query(const QString& libraryName, const QString& fullClassName)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished    (QNetworkReply*)),
@@ -67,11 +67,12 @@ void Connection::query(const API& api)
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
     Settings* setting = Settings::getInstance();
-    QString url = tr("http://%1:%2/?action=query&username=%3&api=%4")
+    QString url = tr("http://%1:%2/?action=query&username=%3&class=%4")
             .arg(setting->getServerIP())
             .arg(setting->getServerPort())
             .arg(setting->getUserName())
-            .arg(api.toClassString());
+            .arg(libraryName + ";" + fullClassName);
+    qDebug() << url;
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
@@ -82,11 +83,8 @@ void Connection::onQueryReply(QNetworkReply* reply)
     QJsonDocument doc = QJsonDocument::fromJson(data, &err);
     if(err.error == QJsonParseError::NoError)
     {
-        QJsonArray questions = doc.object().value("questions").toArray();
-        if(!questions.isEmpty())
-        {
-            qDebug() << doc.toJson();
-            emit queryReply(doc.object());
-        }
+        QJsonArray APIs = doc.array();
+        if(!APIs.isEmpty())
+            emit queryReply(APIs);
     }
 }

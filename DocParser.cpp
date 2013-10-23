@@ -2,6 +2,7 @@
 #include <QString>
 #include <QWebElement>
 #include <QRegExp>
+#include <QDebug>
 
 /// A method details section of a Java Doc page looks like
 /// <a name = ClassName>
@@ -17,6 +18,11 @@ API JavaSE7Parser::getAPI(const QWebElement& e) const
     if(e.isNull())
         return result;
 
+    // library and class
+    result.setLibrary   (getLibrary());
+    result.setFullClass (getFullClass(e));
+
+    // method
     QWebElement p = e;
     while(p.tagName() != "UL")   // go up until a "ul" tag
     {
@@ -25,30 +31,17 @@ API JavaSE7Parser::getAPI(const QWebElement& e) const
         p = p.parent();
     }
 
-    p = p.previousSibling();     // the tag above the "ul" is an "a" tag for class name
+    p = p.previousSibling();     // the tag above the "ul" is an "a" tag for method name
     if(p.tagName() == "A")
-    {
-        // full class name is found at the last ul tag with a class=inheritance attribute
-        QString fullClassName = e.document().findAll("ul[class=inheritance]").last().toPlainText();
-
-        // get the class name from the full class name and remove generic things like <T>
-        result.setClass(fullClassName.split(".").last().remove(QRegExp("<.*>")));
-
-        // the package name is what remains after removing .classname
-        result.setPackage(fullClassName.remove(QRegExp("\\.\\w+$")));
-
-        result.setMethod(p.attribute("name"));
-        result.setLibrary(getLibName());
-    }
+        result.setFullMethod(p.attribute("name"));
 
     return result;
 }
 
-QString JavaSE7Parser::getFullClassName(const QWebElement& e) const {
+QString JavaSE7Parser::getFullClass(const QWebElement& e) const {
+    // full class name is found at the last ul tag with a class=inheritance attribute
     return e.document().findAll("ul[class=inheritance]").last().toPlainText();
 }
-
-QByteArray JavaSE7Parser::getLibName() { return "Java SE 7"; }
 
 
 /////////////////////////////////////////////////////////////////////
@@ -72,7 +65,7 @@ IDocParser* DocParserFactory::getParser(const QString& name) const
 DocParserFactory::DocParserFactory()
 {
     // class name -> parser name
-    qRegisterMetaType<JavaSE7Parser>(JavaSE7Parser::getLibName());
+    qRegisterMetaType<JavaSE7Parser>("Java SE 7");
 }
 
 

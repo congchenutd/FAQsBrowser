@@ -150,7 +150,7 @@ void TabWidget::onReloadAllTabs()
 void TabWidget::onAPISearch(const API& api)
 {
     SearchDlg dlg(this);
-    dlg.setContext(api.toBeautified());
+    dlg.setContext(api.toQueryString());
     if(dlg.exec() == QDialog::Accepted)
         setCurrentIndex(getSearchTabIndex(api, dlg.getQuery()));
 }
