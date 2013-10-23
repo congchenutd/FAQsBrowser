@@ -2,7 +2,7 @@
 #include "TabBar.h"
 #include "WebView.h"
 #include "SearchDlg.h"
-
+#include "Connection.h"
 #include <QMenu>
 #include <QMessageBox>
 #include <QMouseEvent>
@@ -77,7 +77,16 @@ int TabWidget::getSearchTabIndex(const API& api, const QString& query)
     webView->setAPI(api);
     webView->setQuery(query);
     webView->load(QUrl("http://www.google.com/search?q=" + query));
+    Connection::getInstance()->save(api.toAPISignature(), query);
     return i;
+}
+
+void TabWidget::onAPISearch(const API& api)
+{
+    SearchDlg dlg(this);
+    dlg.setContext(api.toQueryString());
+    if(dlg.exec() == QDialog::Accepted)
+        setCurrentIndex(getSearchTabIndex(api, dlg.getQuery()));
 }
 
 void TabWidget::onReloadTab(int index)
@@ -145,14 +154,6 @@ void TabWidget::onReloadAllTabs()
     for(int i = 0; i < count(); ++i)
         if(WebView* webView = qobject_cast<WebView*>(widget(i)))
             webView->reload();
-}
-
-void TabWidget::onAPISearch(const API& api)
-{
-    SearchDlg dlg(this);
-    dlg.setContext(api.toQueryString());
-    if(dlg.exec() == QDialog::Accepted)
-        setCurrentIndex(getSearchTabIndex(api, dlg.getQuery()));
 }
 
 void TabWidget::onCloseOtherTabs(int index)

@@ -93,7 +93,7 @@ void JavaSE7Visitor::addFAQs(const QWebPage* page, const QJsonObject& apiJson)
 //
 //<dt><span class="strong">FAQs:</span></dt>
 //<ul>
-//	<li>Java SE 7 AbstractAction getValue question1
+//	<li>Java SE 7 AbstractAction getValue question1 <a href="mailto:carl@gmail.com">Carl</a>
 //		<ul>
 //			<li><a href="http://www.scribd.com/doc/142803504/Wrox-professional-Java-JDK-Edition">Wrox.professional Java JDK Edition"</a></li>
 //		</ul>
@@ -101,7 +101,6 @@ void JavaSE7Visitor::addFAQs(const QWebPage* page, const QJsonObject& apiJson)
 //</ul>
 QString JavaSE7Visitor::createFAQsHTML(const QJsonObject& json) const
 {
-    qDebug() << json;
     QString html;
     QTextStream os(&html);
 
@@ -115,25 +114,40 @@ QString JavaSE7Visitor::createFAQsHTML(const QJsonObject& json) const
         QJsonObject question = (*itq).toObject();
         os << "<li>" << question.value("question").toString() << "\r\n";
 
+        QJsonArray users = question.value("users").toArray();
+        for(QJsonArray::Iterator itu = users.begin(); itu != users.end(); ++itu)
+        {
+            QJsonObject user = (*itu).toObject();
+            os << "<a target = \"_blank\" href=\"mailto:" << user.value("email").toString() << "\"> "
+               << user.value("name").toString() << "</a>";
+        }
+
+        os << "\r\n";
+
         QJsonArray answers = question.value("answers").toArray();
         os << "<ul>\r\n";
 
-        if(answers.isEmpty())
-        {
+        if(answers.isEmpty()) {
             os << "<li type=\"square\">Not answered!</li>" ;
         }
-        else
+        else {
             for(QJsonArray::Iterator ita = answers.begin(); ita != answers.end(); ++ita)
             {
                 QJsonObject answer = (*ita).toObject();
-                os << "<li type=\"square\"><a target=\"_blank\" href=\"" << answer.value("link").toString() << "\">"
-                   << answer.value("title").toString() << "</a></li>\r\n";
+                QString link  = answer.value("link") .toString();
+                QString title = answer.value("title").toString();
+                if(title.isEmpty())
+                    title = "Answer";
+                os << "<li type=\"square\"><a target=\"_blank\" href=\"" << link << "\">"
+                   << title << "</a></li>\r\n";
             }
+        }
         os << "</ul>\r\n"
            << "</li>\r\n";
     }
     os << "</ul>\r\n";
 
+    qDebug() << html;
     return html;
 }
 
