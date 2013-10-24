@@ -47,6 +47,8 @@ void Connection::save(const QString& apiSignature, const QString& question,
 
     QString fixedLink = link;
     fixedLink.replace("&", "%26");
+    fixedLink.replace("#", "%23");
+
     QString url = tr("http://%1:%2/?action=save&username=%3&email=%4&api=%5&question=%6&link=%7&title=%8")
             .arg(_settings->getServerIP())
             .arg(_settings->getServerPort())

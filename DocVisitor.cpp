@@ -31,7 +31,9 @@ API JavaSE7Visitor::getAPI(const QWebElement& e) const
     QWebElement p = e;
 
     // go up until <ul class="blockList">
-    while(!(p.tagName() == "UL" && p.attribute("class") == "blockList"))
+    while(!(p.tagName() == "UL" &&
+            (p.attribute("class") == "blockList" ||
+             p.attribute("class") == "blockListLast")))
     {
         if(p.isNull())           // empty tag
             return result;
@@ -145,7 +147,9 @@ QString JavaSE7Visitor::createFAQsHTML(const QJsonObject& json) const
             for(QJsonArray::Iterator ita = answers.begin(); ita != answers.end(); ++ita)
             {
                 QJsonObject answer = (*ita).toObject();
-                QString link  = answer.value("link") .toString().replace("%26", "&");
+                QString link  = answer.value("link") .toString();
+                link.replace("%26", "&");
+                link.replace("%23", "#");
                 QString title = answer.value("title").toString();
                 if(title.isEmpty())
                     title = "Link";

@@ -216,7 +216,7 @@ void MainWindow::onHelpful()
     QString query    = webView->getQuery();
     QString link     = webView->url().toString();
     QString title    = webView->title();
-    Connection::getInstance()->save(api.toAPISignature(), query, link, title);
+    Connection::getInstance()->save(api.toSignature(), query, link, title);
 
     _tabWidget->onCloseTab(_tabWidget->currentIndex());
 }

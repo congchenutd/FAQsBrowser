@@ -63,10 +63,10 @@ void WebView::contextMenuEvent(QContextMenuEvent* event)
         {
             API api = _visitor->getAPI(hitTest.enclosingBlockElement());
             if(!api.getClassSignature().isEmpty())
-//            if(!api.getMethodSignature().isEmpty())
             {
                 setAPI(api);
-                menu.addAction(QIcon(":/Images/Search.png"), tr("Search for this API"),
+                menu.addAction(QIcon(":/Images/Search.png"),
+                               tr("Search for %1").arg(api.toLowestName()),
                                this, SLOT(onSearchAPI()));
             }
         }

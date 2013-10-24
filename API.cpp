@@ -22,12 +22,16 @@ QString API::toQueryString() const
     return result;
 }
 
-QString API::toAPISignature() const
+QString API::toSignature() const
 {
     QString result = getLibrary() + ";" + getClassSignature();
     if(!getMethodSignature().isEmpty())
         result += "." + getMethodSignature();
     return result;
+}
+
+QString API::toLowestName() const {
+    return getMethodName().isEmpty() ? getClassName() : getMethodName();
 }
 
 API API::fromJson(const QJsonObject& json)

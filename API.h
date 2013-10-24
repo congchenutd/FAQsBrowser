@@ -13,14 +13,15 @@ public:
     void setClassSignature (const QString& cls)    { _classSig  = cls;    }
     void setMethodSignature(const QString& method) { _methodSig = method; }
 
-    QString getLibrary()         const { return _library;    }
-    QString getClassSignature()  const { return _classSig;   }
-    QString getMethodSignature() const { return _methodSig;  }
+    QString getLibrary()         const { return _library;   }
+    QString getClassSignature()  const { return _classSig;  }
+    QString getMethodSignature() const { return _methodSig; }
     QString getClassName()  const;
     QString getMethodName() const;
 
-    QString toQueryString()  const;  // e.g., Java SE 7 ensureCapacity
-    QString toAPISignature() const;  // e.g., Java SE 7;java.util.ArrayList.ensureCapacity(int)
+    QString toQueryString() const;  // e.g., Java SE 7 ensureCapacity
+    QString toSignature()   const;  // e.g., Java SE 7;java.util.ArrayList.ensureCapacity(int)
+    QString toLowestName()  const;  // method name or class name if method is empty
 
     static API fromJson(const QJsonObject& json);
 

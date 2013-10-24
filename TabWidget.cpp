@@ -77,7 +77,7 @@ int TabWidget::getSearchTabIndex(const API& api, const QString& query)
     webView->setAPI(api);
     webView->setQuery(query);
     webView->load(QUrl("http://www.google.com/search?q=" + query));
-    Connection::getInstance()->save(api.toAPISignature(), query);
+    Connection::getInstance()->save(api.toSignature(), query);
     return i;
 }
 
