@@ -62,7 +62,8 @@ void WebView::contextMenuEvent(QContextMenuEvent* event)
         if(_visitor != 0)
         {
             API api = _visitor->getAPI(hitTest.enclosingBlockElement());
-            if(!api.getMethodSignature().isEmpty())
+            if(!api.getClassSignature().isEmpty())
+//            if(!api.getMethodSignature().isEmpty())
             {
                 setAPI(api);
                 menu.addAction(QIcon(":/Images/Search.png"), tr("Search for this API"),

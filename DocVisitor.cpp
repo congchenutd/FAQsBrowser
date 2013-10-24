@@ -29,14 +29,16 @@ API JavaSE7Visitor::getAPI(const QWebElement& e) const
 
     // method
     QWebElement p = e;
-    while(p.tagName() != "UL")   // go up until a "ul" tag
+
+    // go up until <ul class="blockList">
+    while(!(p.tagName() == "UL" && p.attribute("class") == "blockList"))
     {
         if(p.isNull())           // empty tag
             return result;
         p = p.parent();
     }
 
-    p = p.previousSibling();     // the tag above the "ul" is an "a" tag for method name
+    p = p.previousSibling();     // <a name="method(params)">
     if(p.tagName() == "A")
         result.setMethodSignature(p.attribute("name"));
 
@@ -58,15 +60,24 @@ QWebElement JavaSE7Visitor::getRootElement(const QWebPage* page) const
 
 void JavaSE7Visitor::addFAQs(const QWebPage* page, const QJsonObject& apiJson)
 {
-    QString apiSig = apiJson.value("api").toString();                         // package.class.method(params)
-    int dot = apiSig.lastIndexOf(".", QRegExp("\\(.*\\)").indexIn(apiSig) );  // dot before method
-    QString method = apiSig.right(apiSig.length() - dot - 1);                 // method(params)
+    API api = API::fromJson(apiJson);
 
-    // <a name = method(params)>
-    QWebElement e = getRootElement(page).findFirst(QObject::tr("a[name=\"%1\"]").arg(method));
-    e = e.nextSibling();    // ul
-    e = e.findFirst("dl");  // dl
-    e.appendInside(createFAQsHTML(apiJson));
+    if(api.getMethodSignature().isEmpty())   // for class
+    {
+        QWebElement e = getRootElement(page).findFirst("div[class=\"description\"]");
+        e = e.findFirst("ul[class=\"blockList\"]");
+        e = e.findFirst("li[class=\"blockList\"]");
+        e.appendInside(createFAQsHTML(apiJson));
+    }
+    else                                      // for method or attribute
+    {
+        // <a name = method(params)>
+        QWebElement e = getRootElement(page).findFirst(QObject::tr("a[name=\"%1\"]")
+                                                       .arg(api.getMethodSignature()));
+        e = e.nextSibling();    // ul
+        e = e.findFirst("dl");  // dl
+        e.appendInside(createFAQsHTML(apiJson));
+    }
 }
 
 // e.g.
@@ -112,38 +123,39 @@ QString JavaSE7Visitor::createFAQsHTML(const QJsonObject& json) const
     for(QJsonArray::Iterator itq = questions.begin(); itq != questions.end(); ++itq)
     {
         QJsonObject question = (*itq).toObject();
-        os << "<li>" << question.value("question").toString() << "\r\n";
+        os << "\t<li>Q: " << question.value("question").toString() << "\r\n";
 
         QJsonArray users = question.value("users").toArray();
         for(QJsonArray::Iterator itu = users.begin(); itu != users.end(); ++itu)
         {
             QJsonObject user = (*itu).toObject();
-            os << "<a target = \"_blank\" href=\"mailto:" << user.value("email").toString() << "\"> "
+            os << "\t\t<a target = \"_blank\" href=\"mailto:" << user.value("email").toString() << "\"> "
                << user.value("name").toString() << "</a>";
         }
 
         os << "\r\n";
 
         QJsonArray answers = question.value("answers").toArray();
-        os << "<ul>\r\n";
+        os << "\t\t<ul>\r\n";
 
         if(answers.isEmpty()) {
-            os << "<li type=\"square\">Not answered!</li>" ;
+            os << "\t\t\t<li type=\"square\">Not answered!</li>" ;
         }
         else {
             for(QJsonArray::Iterator ita = answers.begin(); ita != answers.end(); ++ita)
             {
                 QJsonObject answer = (*ita).toObject();
-                QString link  = answer.value("link") .toString();
+                QString link  = answer.value("link") .toString().replace("%26", "&");
                 QString title = answer.value("title").toString();
                 if(title.isEmpty())
-                    title = "Answer";
-                os << "<li type=\"square\"><a target=\"_blank\" href=\"" << link << "\">"
-                   << title << "</a></li>\r\n";
+                    title = "Link";
+                os << "\t\t\t<li type=\"square\">A: <a target=\"_blank\" href=\"" << link << "\">"
+                   << title << "</a>\r\n"
+                   << "\t\t\t</li>\r\n";
             }
         }
-        os << "</ul>\r\n"
-           << "</li>\r\n";
+        os << "\t\t</ul>\r\n"
+           << "\t</li>\r\n";
     }
     os << "</ul>\r\n";
 

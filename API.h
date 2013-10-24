@@ -3,7 +3,9 @@
 
 #include <QString>
 
-// representing the context of a search, ie method or attribute
+class QJsonObject;
+
+// representing the context of a search, ie class, method or attribute
 class API
 {
 public:
@@ -19,6 +21,8 @@ public:
 
     QString toQueryString()  const;  // e.g., Java SE 7 ensureCapacity
     QString toAPISignature() const;  // e.g., Java SE 7;java.util.ArrayList.ensureCapacity(int)
+
+    static API fromJson(const QJsonObject& json);
 
 private:
     QString _library;
