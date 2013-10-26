@@ -58,6 +58,10 @@ void TabBar::onContextMenu(const QPoint& position)
     menu.exec(QCursor::pos());
 }
 
+void TabBar::mouseDoubleClickEvent(QMouseEvent*) {
+    onCloseTab();
+}
+
 void TabBar::onCloseTab() {
     emit tabCloseRequested(currentIndex());
 }

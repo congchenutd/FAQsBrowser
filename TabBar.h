@@ -29,6 +29,9 @@ public:
 public slots:
     void onContextMenu(const QPoint& position);
 
+protected:
+    void mouseDoubleClickEvent(QMouseEvent*);
+
 private slots:
     void onCloseTab();
     void onCloseOtherTabs();
