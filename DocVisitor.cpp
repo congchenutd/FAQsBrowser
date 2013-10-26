@@ -148,8 +148,6 @@ QString JavaSE7Visitor::createFAQsHTML(const QJsonObject& json) const
             {
                 QJsonObject answer = (*ita).toObject();
                 QString link  = answer.value("link") .toString();
-                link.replace("%26", "&");
-                link.replace("%23", "#");
                 QString title = answer.value("title").toString();
                 if(title.isEmpty())
                     title = "Link";

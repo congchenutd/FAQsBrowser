@@ -45,20 +45,17 @@ void Connection::save(const QString& apiSignature, const QString& question,
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
-    QString fixedLink = link;
-    fixedLink.replace("&", "%26");
-    fixedLink.replace("#", "%23");
-
-    QString url = tr("http://%1:%2/?action=save&username=%3&email=%4&api=%5&question=%6&link=%7&title=%8")
+    QString url = tr("http://%1:%2/?action=save&username=%3&email=%4&api=%5&question=%6&title=%7&link=%8")
             .arg(_settings->getServerIP())
             .arg(_settings->getServerPort())
             .arg(_settings->getUserName())
             .arg(_settings->getEmail())
             .arg(apiSignature)
             .arg(question)
-            .arg(fixedLink)
-            .arg(title);
+            .arg(QString(QUrl::toPercentEncoding(title)))
+            .arg(QString(QUrl::toPercentEncoding(link)));
     qDebug() << url;
+
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
