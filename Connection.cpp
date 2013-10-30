@@ -45,15 +45,17 @@ void Connection::save(const QString& apiSignature, const QString& question,
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
-    QString url = tr("http://%1:%2/?action=save&username=%3&email=%4&api=%5&question=%6&title=%7&link=%8")
+    QString url = tr("http://%1:%2/?action=save&username=%3&email=%4&api=%5&question=%6")
             .arg(_settings->getServerIP())
             .arg(_settings->getServerPort())
             .arg(_settings->getUserName())
             .arg(_settings->getEmail())
             .arg(apiSignature)
-            .arg(question)
-            .arg(QString(QUrl::toPercentEncoding(title)))
-            .arg(QString(QUrl::toPercentEncoding(link)));
+            .arg(question);
+
+    // tr doesn't work correctly for percent encoded strings
+    url += "&title=" + QUrl::toPercentEncoding(title) +
+           "&link="  + QUrl::toPercentEncoding(link);
     qDebug() << url;
 
     manager->get(QNetworkRequest(QUrl(url)));
