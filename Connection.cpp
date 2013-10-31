@@ -52,6 +52,7 @@ void Connection::save(const QString& apiSignature, const QString& question,
             .arg(apiSignature)
             .arg(question);
 
+    // title and link may contain illegal chars for url, percent encode them
     // Workaround: tr doesn't work correctly for percent encoded strings
     url += "&title=" + QUrl::toPercentEncoding(title) +
            "&link="  + QUrl::toPercentEncoding(link);
