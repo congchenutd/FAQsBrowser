@@ -15,12 +15,12 @@ SearchBar::SearchBar(QWidget* parent) :
     _btHighlight->setCheckable(true);
     _cbMatchCase = new QCheckBox(tr("Match case"), this);
 
-    connect(_lineEdit, SIGNAL(textEdited(QString)), this, SLOT(onEdited(QString)));
-    connect(_btPrev,      SIGNAL(clicked()), this, SLOT(onFindPrev()));
-    connect(_btNext,      SIGNAL(clicked()), this, SLOT(onFindNext()));
-    connect(_btHighlight, SIGNAL(toggled(bool)), this, SLOT(onHighlight(bool)));
+    connect(_lineEdit,    SIGNAL(textEdited(QString)), this, SLOT(onEdited(QString)));
+    connect(_btPrev,      SIGNAL(clicked()),           this, SLOT(onFindPrev()));
+    connect(_btNext,      SIGNAL(clicked()),           this, SLOT(onFindNext()));
+    connect(_btHighlight, SIGNAL(toggled(bool)),       this, SLOT(onHighlight(bool)));
 
-    addWidget(new QLabel(tr("Search in page ")));
+    addWidget(new QLabel(tr(" Search in page ")));
     addWidget(_lineEdit);
     addWidget(_btPrev);
     addWidget(_btNext);
@@ -44,9 +44,8 @@ void SearchBar::keyPressEvent(QKeyEvent* e)
 {
     QToolBar::keyPressEvent(e);
     if(e->key() == Qt::Key_Escape)
-        emit hideMe();
-    else
-    if(e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return)
+        emit hideMe();  // let MainWindow toggle its action, instead of calling hide()
+    else if(e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return)
         onFindNext();
 }
 

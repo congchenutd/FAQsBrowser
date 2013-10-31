@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui.statusBar->addPermanentWidget(_progressBar);
 
     onDocPage();
-    updateReloadStop(false);
+    toggleReloadStop(false);
 
     connect(ui.actionAbout,      SIGNAL(triggered()), this, SLOT(onAbout()));
     connect(ui.actionOptions,    SIGNAL(triggered()), this, SLOT(onOptions()));
@@ -71,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui.actionZoomTextOnly, SIGNAL(toggled(bool)), this, SLOT(onZoomTextOnly(bool)));
     connect(ui.actionFullScreen,   SIGNAL(toggled(bool)), this, SLOT(onFullScreen  (bool)));
 
+    connect(ui.toolBarSearch, SIGNAL(hideMe()), ui.actionShowSearch, SLOT(toggle()));
     connect(ui.toolBarSearch, SIGNAL(search(QString,bool,bool)),
             this, SLOT(onSearch(QString,bool,bool)));
     connect(ui.toolBarSearch, SIGNAL(highlight(QString,bool,bool)),
@@ -79,20 +80,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(_tabWidget, SIGNAL(loadProgress(int)),            this, SLOT(onLoadProgress(int)));
     connect(_tabWidget, SIGNAL(currentTitleChanged(QString)), this, SLOT(onCurrentTitleChanged(QString)));
     connect(_tabWidget, SIGNAL(historyChanged()),             this, SLOT(onHistoryChanged()));
-//    connect(_tabWidget, SIGNAL(statusBarMessage(QString)), statusBar(), SLOT(showMessage(QString)));
-    connect(_tabWidget, SIGNAL(linkHovered(QString)),      statusBar(), SLOT(showMessage(QString)));
+    connect(_tabWidget, SIGNAL(linkHovered(QString)), statusBar(), SLOT(showMessage(QString)));
 
-    connect(ui.toolBarSearch, SIGNAL(hideMe()), ui.actionShowSearch, SLOT(toggle()));
 }
 
 MainWindow* MainWindow::_instance = 0;
+
 MainWindow* MainWindow::getInstance() {
     return _instance;
 }
 
 void MainWindow::onAbout() {
     QMessageBox::about(this, tr("About"),
-                       tr("<h3><b>FAQsBrowser: Capturing and sharing API queries on the Web.</b></h3>"
+                       tr("<h3><b>FAQsBrowser: Embedding Crowdsourced FAQs to Official API Document.</b></h3>"
                           "<p><a href=mailto:CongChenUTD@Gmail.com>CongChenUTD@Gmail.com</a></p>"));
 }
 
@@ -158,7 +158,8 @@ void MainWindow::onHighlight(const QString& target, bool highlight, bool matchCa
                                     QWebPage::FindWrapsAroundDocument;
         if(matchCase)
             flags |= QWebPage::FindCaseSensitively;
-        webView->findText(highlight ? target : QString(), flags);
+        webView->findText(highlight ? target : QString(),
+                          flags);
     }
 }
 
@@ -167,13 +168,16 @@ void MainWindow::onLoadProgress(int progress)
     _progressBar->setValue(progress);
     bool loading = 0 < progress && progress < 100;
     _progressBar->setVisible(loading);
-    updateReloadStop(loading);
+    toggleReloadStop(loading);
 }
 
-void MainWindow::onCurrentTitleChanged(const QString& title) {
+void MainWindow::onCurrentTitleChanged(const QString& title)
+{
     setWindowTitle(title.isEmpty() ? tr("FAQs Browser")
                                    : tr("%1 - FAQs Browser").arg(title));
 
+    // Urgly: the following should be in a separate slot for "TabWidget::currentChanged()"
+    // which represent its function more intuitively
     if(WebView* webView = currentWebView())
     {
         ui.actionHelpful   ->setVisible(webView->getRole() == WebView::RESULT_ROLE);
@@ -191,7 +195,8 @@ void MainWindow::onForward() {
         webView->forward();
 }
 
-void MainWindow::onHistoryChanged() {
+void MainWindow::onHistoryChanged()
+{
     if(WebView* webView = currentWebView())
     {
         ui.actionBack   ->setEnabled(webView->history()->canGoBack());
@@ -199,7 +204,8 @@ void MainWindow::onHistoryChanged() {
     }
 }
 
-void MainWindow::onReloadStop() {
+void MainWindow::onReloadStop()
+{
     if(WebView* webView = currentWebView())
     {
         if(ui.actionReloadStop->text() == tr("Stop"))
@@ -211,11 +217,11 @@ void MainWindow::onReloadStop() {
 
 void MainWindow::onHelpful()
 {
-    WebView* webView = currentWebView();
-    Connection::getInstance()->save(webView->getAPI().toSignature(),
-                                    webView->getQuery(),
-                                    webView->url().toString(),
-                                    webView->title());
+    if(WebView* webView = currentWebView())
+        Connection::getInstance()->save(webView->getAPI().toSignature(),
+                                        webView->getQuery(),
+                                        webView->url().toString(),
+                                        webView->title());
 
     _tabWidget->onCloseTab(_tabWidget->currentIndex());
 }
@@ -228,10 +234,11 @@ WebView* MainWindow::currentWebView() const {
     return _tabWidget->getCurrentWebView();
 }
 
-void MainWindow::updateReloadStop(bool loading)
+void MainWindow::toggleReloadStop(bool loading)
 {
-    ui.actionReloadStop->setIcon(qApp->style()->standardIcon(loading ? QStyle::SP_BrowserStop
-                                                                     : QStyle::SP_BrowserReload));
+    ui.actionReloadStop->setIcon(
+                qApp->style()->standardIcon(loading ? QStyle::SP_BrowserStop
+                                                    : QStyle::SP_BrowserReload));
     ui.actionReloadStop->setText   (loading ? tr("Stop") : tr("Reload"));
     ui.actionReloadStop->setToolTip(loading ? tr("Stop") : tr("Reload"));
 }

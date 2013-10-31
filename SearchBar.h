@@ -10,6 +10,7 @@ class QCheckBox;
 class SearchBar : public QToolBar
 {
     Q_OBJECT
+
 public:
     SearchBar(QWidget* parent = 0);
     void setVisible(bool visible);
@@ -17,6 +18,7 @@ public:
 protected:
     void keyPressEvent(QKeyEvent* e);
 
+    // all handled by MainWindow
 signals:
     void search   (const QString& target, bool forward,   bool matchCase);
     void highlight(const QString& target, bool highlight, bool matchCase);

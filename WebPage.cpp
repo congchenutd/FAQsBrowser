@@ -26,7 +26,7 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
         {
             WebView* newView = MainWindow::getInstance()->getTabWidget()->onNewTab();
             newView->setRole (WebView::RESULT_ROLE);
-            newView->setAPI  (thisView->getAPI());    // transfer the attributes of a page
+            newView->setAPI  (thisView->getAPI());    // transfer the attributes
             newView->setQuery(thisView->getQuery());
             newView->load(request);
             return false;

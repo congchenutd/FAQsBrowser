@@ -40,7 +40,7 @@ private slots:
 
 private:
     WebView* currentWebView() const;
-    void updateReloadStop(bool loading);
+    void toggleReloadStop(bool loading);
 
 private:
     Ui::MainWindow ui;

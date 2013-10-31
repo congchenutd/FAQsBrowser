@@ -7,6 +7,7 @@
 class QWebElement;
 class QWebPage;
 
+// Read and write doc pages
 // parses the web element clicked and finds the context (api) of the click
 // adds faqs section to corresponding place in the document
 class IDocVisitor
@@ -40,7 +41,7 @@ private:
 
 
 /////////////////////////////////////////////////////////////////////
-// return a visitor based on its name
+// return a visitor object based on its name
 
 Q_DECLARE_METATYPE(JavaSE7Visitor);
 

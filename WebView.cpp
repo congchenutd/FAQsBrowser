@@ -50,19 +50,23 @@ void WebView::contextMenuEvent(QContextMenuEvent* event)
 {
     QWebHitTestResult hitTest = page()->mainFrame()->hitTestContent(event->pos());
     QMenu menu(this);
+
+    // click on a link
     if(!hitTest.linkUrl().isEmpty())
         menu.addAction(tr("Open in New Tab"), this, SLOT(onOpenLinkInNewTab()));
+
+    // click on empty space
     else
     {
         menu.addAction(pageAction(QWebPage::Back));
         menu.addAction(pageAction(QWebPage::Forward));
         menu.addAction(pageAction(QWebPage::Reload));
 
-        QWebHitTestResult hitTest = page()->mainFrame()->hitTestContent(event->pos());
+        // try to find API
         if(_visitor != 0)
         {
             API api = _visitor->getAPI(hitTest.enclosingBlockElement());
-            if(!api.getClassSignature().isEmpty())
+            if(!api.getClassSignature().isEmpty())  // is a class page
             {
                 setAPI(api);
                 menu.addAction(QIcon(":/Images/Search.png"),
@@ -86,7 +90,7 @@ void WebView::onProgress(int progress)
 {
     _progress = progress;
 
-    // send query for the class when the page is loaded
+    // send query for the class FAQ when the page is loaded
     if(progress == 100)
     {
         if(_visitor == 0)

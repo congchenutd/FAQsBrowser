@@ -3,6 +3,7 @@
 
 #include <QWebPage>
 
+// content of a page
 class WebPage : public QWebPage
 {
     Q_OBJECT

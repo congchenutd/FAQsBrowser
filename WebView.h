@@ -7,6 +7,8 @@
 class WebPage;
 class IDocVisitor;
 
+// interactions on a page
+// TabWidget->WebView->WebPage
 class WebView : public QWebView
 {
     Q_OBJECT

@@ -3,6 +3,7 @@
 
 #include "ui_SearchDlg.h"
 
+// letting users input search query
 class SearchDlg : public QDialog
 {
     Q_OBJECT

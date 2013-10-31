@@ -13,7 +13,6 @@ class TabWidget : public QTabWidget
 
 signals:
     void currentTitleChanged(const QString& title);
-//    void statusBarMessage(const QString& message);
     void linkHovered(const QString& link);
     void loadProgress(int progress);
     void historyChanged();   // page back and forward history
@@ -23,7 +22,6 @@ public:
 
     WebView* getCurrentWebView() const;
     WebView* getWebView(int index) const;
-    int getWebViewIndex(WebView* webView) const;
 
     int getDocTabIndex();
     int getSearchTabIndex(const API& api, const QString& query);
@@ -31,9 +29,6 @@ public:
 public slots:
     WebView* onNewTab();
     void onCloseTab(int index = -1);
-
-protected:
-    void contextMenuEvent(QContextMenuEvent *event);
 
 private slots:
     void onCloseOtherTabs(int index);
@@ -49,7 +44,6 @@ private slots:
 
 private:
     TabBar* _tabBar;
-    int     _prevTabIndex;
 };
 
 #endif // TABWIDGET_H

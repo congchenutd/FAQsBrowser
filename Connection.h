@@ -1,13 +1,12 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include <QString>
 #include <QObject>
 
-class API;
 class Settings;
 class QNetworkReply;
 
+// communicating with server
 class Connection : public QObject
 {
     Q_OBJECT
@@ -24,7 +23,7 @@ private slots:
     void onQueryReply(QNetworkReply* reply);
 
 signals:
-    void pingReply (bool alive);
+    void pingReply(bool alive);
 
     // an array of api objects, each api object contains multiple questions
     void queryReply(const QJsonArray&);

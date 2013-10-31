@@ -28,9 +28,8 @@ API JavaSE7Visitor::getAPI(const QWebElement& e) const
     result.setClassSignature(getClassSignature(e));
 
     // method
+    // go up until <ul class="blockList"> or blockListLast
     QWebElement p = e;
-
-    // go up until <ul class="blockList">
     while(!(p.tagName() == "UL" &&
             (p.attribute("class") == "blockList" ||
              p.attribute("class") == "blockListLast")))
@@ -55,7 +54,7 @@ QString JavaSE7Visitor::getClassSignature(const QWebElement& e) const {
 QWebElement JavaSE7Visitor::getRootElement(const QWebPage* page) const
 {
     foreach(const QWebFrame* frame, page->mainFrame()->childFrames())
-        if(frame->frameName() == "classFrame")
+        if(frame->frameName() == "classFrame")  // classFrame contains class details
             return frame->documentElement();
     return QWebElement();
 }
@@ -66,9 +65,9 @@ void JavaSE7Visitor::addFAQs(const QWebPage* page, const QJsonObject& apiJson)
 
     if(api.getMethodSignature().isEmpty())   // for class
     {
-        QWebElement e = getRootElement(page).findFirst("div[class=\"description\"]");
-        e = e.findFirst("ul[class=\"blockList\"]");
-        e = e.findFirst("li[class=\"blockList\"]");
+        QWebElement e = getRootElement(page).findFirst("div[class=description]");
+        e = e.findFirst("ul[class=blockList]");
+        e = e.findFirst("li[class=blockList]");
         e.appendInside(createFAQsHTML(apiJson));
     }
     else                                      // for method or attribute
@@ -97,7 +96,7 @@ void JavaSE7Visitor::addFAQs(const QWebPage* page, const QJsonObject& apiJson)
 //            "users": [
 //                {
 //                    "email": "carl@gmail.com",
-//                    "name": "Carl                     "
+//                    "name": "Carl"
 //                }
 //            ]
 //        }

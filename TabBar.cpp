@@ -1,10 +1,10 @@
 #include "TabBar.h"
 #include <QMenu>
+#include <QMouseEvent>
 
 TabBar::TabBar(QWidget* parent)
     : QTabBar(parent)
 {
-    setAcceptDrops(true);
     setTabsClosable(true);
     setMovable(true);
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -37,7 +37,7 @@ void TabBar::onContextMenu(const QPoint& position)
     menu.addSeparator();
 
     int index = tabAt(position);
-    if(index != -1)
+    if(index != -1)   //  clicked on a tab
     {
         _actionClose      ->setData(index);
         _actionCloseOthers->setData(index);
@@ -55,7 +55,7 @@ void TabBar::onContextMenu(const QPoint& position)
     }
 
     menu.addAction(_actionRefreshAll);
-    menu.exec(QCursor::pos());
+    menu.exec(position);
 }
 
 void TabBar::mouseDoubleClickEvent(QMouseEvent*) {

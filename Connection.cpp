@@ -1,6 +1,5 @@
 #include "Connection.h"
 #include "Settings.h"
-#include "API.h"
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -53,7 +52,7 @@ void Connection::save(const QString& apiSignature, const QString& question,
             .arg(apiSignature)
             .arg(question);
 
-    // tr doesn't work correctly for percent encoded strings
+    // Workaround: tr doesn't work correctly for percent encoded strings
     url += "&title=" + QUrl::toPercentEncoding(title) +
            "&link="  + QUrl::toPercentEncoding(link);
     qDebug() << url;
