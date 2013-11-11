@@ -116,7 +116,7 @@ QString JavaSE7Visitor::createFAQsHTML(const QJsonObject& json) const
     QString html;
     QTextStream os(&html);
 
-    os << "<dt><span class=\"strong\">FAQs:</span></dt>\r\n";
+    os << "<dt><span class=\"strong\">FAQ:</span></dt>\r\n";
 
     QJsonArray questions = json.value("questions").toArray();
     os << "<ul>\r\n";

@@ -176,8 +176,8 @@ void MainWindow::onLoadProgress(int progress)
 
 void MainWindow::onCurrentTitleChanged(const QString& title)
 {
-    setWindowTitle(title.isEmpty() ? tr("FAQs Browser")
-                                   : tr("%1 - FAQs Browser").arg(title));
+    setWindowTitle(title.isEmpty() ? tr("FAQ Browser")
+                                   : tr("%1 - FAQ Browser").arg(title));
 
     // Urgly: the following should be in a separate slot for "TabWidget::currentChanged()"
     // which represent its function more intuitively
