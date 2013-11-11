@@ -4,6 +4,7 @@
 #include "WebView.h"
 #include "OptionsDlg.h"
 #include "Connection.h"
+#include "Settings.h"
 #include <QMessageBox>
 #include <QWebSettings>
 #include <QProgressBar>
@@ -51,6 +52,8 @@ MainWindow::MainWindow(QWidget *parent) :
     _progressBar = new QProgressBar(this);
     _progressBar->setMaximum(100);
     ui.statusBar->addPermanentWidget(_progressBar);
+
+    qApp->setFont(Settings::getInstance()->getFont());
 
     onDocPage();
     toggleReloadStop(false);

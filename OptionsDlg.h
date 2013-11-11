@@ -16,6 +16,7 @@ public:
 private slots:
     void onPingServer();
     void onPingReply(bool alive);
+    void onFont();
 
 private:
     Ui::OptionsDlg ui;
