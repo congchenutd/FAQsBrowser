@@ -36,7 +36,6 @@ private slots:
     void onOpenLinkInNewTab();
     void onSearchAPI();
     void onProgress(int progress);
-    void onQueryReply(const QJsonArray& APIs);
 
 signals:
     void apiSearch(const API& api);

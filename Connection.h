@@ -14,9 +14,11 @@ class Connection : public QObject
 public:
     static Connection* getInstance();
     void ping();
-    void save(const QString& apiSignature,     const QString& question,
+    void save(const QString& apiSig, const QString& question,
               const QString& link = QString(), const QString& title = QString());
-    void query(const QString& libraryName, const QString& classSignature);
+    void query(const QString& libraryName, const QString& classSig);
+    void logAPI   (const QString& apiSig);  // user viewed the api doc
+    void logAnswer(const QString& link);    // user clicked an answer link
 
 private slots:
     void onPingReply (QNetworkReply* reply);

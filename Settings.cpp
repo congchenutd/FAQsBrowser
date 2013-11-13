@@ -9,11 +9,13 @@ Settings *Settings::getInstance()
     return _instance;
 }
 
-QString Settings::getServerIP()   const { return value("ServerIP")  .toString(); }
-int     Settings::getServerPort() const { return value("ServerPort").toInt();    }
-QString Settings::getUserName()   const { return value("UserName")  .toString(); }
-QString Settings::getEmail()      const { return value("Email")     .toString(); }
-qreal   Settings::getZoomFactor() const { return value("ZoomFactor").toReal();   }
+QString Settings::getDocUrl()     const { return value("DocUrl")     .toString(); }
+QString Settings::getLibrary()    const { return value("Library")    .toString(); }
+QString Settings::getServerIP()   const { return value("ServerIP")   .toString(); }
+int     Settings::getServerPort() const { return value("ServerPort") .toInt();    }
+QString Settings::getUserName()   const { return value("UserName")   .toString(); }
+QString Settings::getEmail()      const { return value("Email")      .toString(); }
+qreal   Settings::getZoomFactor() const { return value("ZoomFactor") .toReal();   }
 
 QFont Settings::getFont() const
 {
@@ -26,6 +28,8 @@ QFont Settings::getFont() const
     return result;
 }
 
+void Settings::setDocUrl    (const QString& url)      { setValue("DocUrl",     url);      }
+void Settings::setLibrary   (const QString& libName)  { setValue("Library",    libName);  }
 void Settings::setServerIP  (const QString& ip)       { setValue("ServerIP",   ip);       }
 void Settings::setServerPort(int port)                { setValue("ServerPort", port);     }
 void Settings::setUserName  (const QString& userName) { setValue("UserName",   userName); }

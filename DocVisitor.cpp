@@ -25,7 +25,7 @@ API JavaSE7Visitor::getAPI(const QWebElement& e) const
 
     // library and class
     result.setLibrary       (getLibrary());
-    result.setClassSignature(getClassSignature(e));
+    result.setClassSignature(getClassSig(e));
 
     // method
     // go up until <ul class="blockList"> or blockListLast
@@ -46,9 +46,11 @@ API JavaSE7Visitor::getAPI(const QWebElement& e) const
     return result;
 }
 
-QString JavaSE7Visitor::getClassSignature(const QWebElement& e) const {
+QString JavaSE7Visitor::getClassSig(const QWebElement& e) const
+{
     // class signature is found at the last ul tag with a class=inheritance attribute
-    return e.document().findAll("ul[class=inheritance]").last().toPlainText();
+    return e.document().findAll("ul[class=inheritance]").last()
+            .toPlainText().remove(QRegExp("<.*>"));  // remove generic things like <T>
 }
 
 QWebElement JavaSE7Visitor::getRootElement(const QWebPage* page) const
@@ -127,14 +129,14 @@ QString JavaSE7Visitor::createFAQsHTML(const QJsonObject& json) const
         os << "\t<li>Q: " << question.value("question").toString() << "\r\n";
 
         QJsonArray users = question.value("users").toArray();
+        os << "\t\t (";
         for(QJsonArray::Iterator itu = users.begin(); itu != users.end(); ++itu)
         {
             QJsonObject user = (*itu).toObject();
-            os << "\t\t<a target = \"_blank\" href=\"mailto:" << user.value("email").toString() << "\"> "
+            os << "<a target = \"_blank\" href=\"mailto:" << user.value("email").toString() << "\"> "
                << user.value("name").toString() << "</a>";
         }
-
-        os << "\r\n";
+        os << " )\r\n";
 
         QJsonArray answers = question.value("answers").toArray();
         os << "\t\t<ul>\r\n";
@@ -150,7 +152,8 @@ QString JavaSE7Visitor::createFAQsHTML(const QJsonObject& json) const
                 QString title = answer.value("title").toString();
                 if(title.isEmpty())
                     title = "Link";
-                os << "\t\t\t<li type=\"square\">A: <a target=\"_blank\" href=\"" << link << "\">"
+                os << "\t\t\t<li type=\"square\">A: <a target=\"_blank\" href=\""
+                   << link << "\">"
                    << title << "</a>\r\n"
                    << "\t\t\t</li>\r\n";
             }

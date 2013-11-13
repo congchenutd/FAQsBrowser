@@ -3,7 +3,7 @@
 #include <QStringList>
 
 QString API::getClassName() const {
-    return getClassSignature().section(".", -1, -1).remove(QRegExp("<.*>"));
+    return getClassSignature().section(".", -1, -1);
     // e.g., java.util.ArrayList<E> -> ArrayList
 }
 

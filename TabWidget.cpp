@@ -3,6 +3,7 @@
 #include "WebView.h"
 #include "SearchDlg.h"
 #include "Connection.h"
+#include "Settings.h"
 
 TabWidget::TabWidget(QWidget *parent)
     : QTabWidget(parent),
@@ -43,7 +44,7 @@ int TabWidget::getDocTabIndex()
     // or create a new one
     WebView* webView = onNewTab();
     webView->setRole(WebView::DOC_ROLE);
-    webView->load(QUrl("http://docs.oracle.com/javase/7/docs/api/"));
+    webView->load(QUrl(Settings::getInstance()->getDocUrl()));
     return indexOf(webView);
 }
 

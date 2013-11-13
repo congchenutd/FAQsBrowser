@@ -38,8 +38,8 @@ void Connection::onPingReply(QNetworkReply* reply)
     emit pingReply(status == 200);
 }
 
-void Connection::save(const QString& apiSignature, const QString& question,
-                      const QString& link,         const QString& title)
+void Connection::save(const QString& apiSig, const QString& question,
+                      const QString& link,   const QString& title)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
@@ -49,7 +49,7 @@ void Connection::save(const QString& apiSignature, const QString& question,
             .arg(_settings->getServerPort())
             .arg(_settings->getUserName())
             .arg(_settings->getEmail())
-            .arg(apiSignature)
+            .arg(apiSig)
             .arg(question);
 
     // title and link may contain illegal chars for url, percent encode them
@@ -61,7 +61,7 @@ void Connection::save(const QString& apiSignature, const QString& question,
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
-void Connection::query(const QString& libraryName, const QString& classSignature)
+void Connection::query(const QString& libraryName, const QString& classSig)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished    (QNetworkReply*)),
@@ -72,8 +72,43 @@ void Connection::query(const QString& libraryName, const QString& classSignature
             .arg(_settings->getServerIP())
             .arg(_settings->getServerPort())
             .arg(_settings->getUserName())
-            .arg(libraryName + ";" + classSignature);
-    qDebug() << url;
+            .arg(libraryName + ";" + classSig);
+    qDebug() << "Query: " << url;
+    manager->get(QNetworkRequest(QUrl(url)));
+}
+
+void Connection::logAPI(const QString& apiSig)
+{
+    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
+
+    QString url = tr("http://%1:%2/?action=logapi&username=%3&email=%4&api=%5")
+            .arg(_settings->getServerIP())
+            .arg(_settings->getServerPort())
+            .arg(_settings->getUserName())
+            .arg(_settings->getEmail())
+            .arg(apiSig);
+    qDebug() << "Log API: " << url;
+
+    manager->get(QNetworkRequest(QUrl(url)));
+}
+
+void Connection::logAnswer(const QString& link)
+{
+    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
+
+    QString url = tr("http://%1:%2/?action=loganswer&username=%3&email=%4")
+            .arg(_settings->getServerIP())
+            .arg(_settings->getServerPort())
+            .arg(_settings->getUserName())
+            .arg(_settings->getEmail());
+
+    // link may contain illegal chars for url, percent encode them
+    // Workaround: tr doesn't work correctly for percent encoded strings
+    url += "&link="  + QUrl::toPercentEncoding(link);
+    qDebug() << "Log answer: " << url;
+
     manager->get(QNetworkRequest(QUrl(url)));
 }
 

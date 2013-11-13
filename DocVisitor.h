@@ -13,10 +13,10 @@ class QWebPage;
 class IDocVisitor
 {
 public:
-    virtual QByteArray  getLibrary       ()                     const = 0;
-    virtual API         getAPI           (const QWebElement& e) const = 0;
-    virtual QString     getClassSignature(const QWebElement& e) const = 0;
-    virtual QWebElement getRootElement   (const QWebPage* page) const = 0;
+    virtual QByteArray  getLibrary    ()                     const = 0;
+    virtual API         getAPI        (const QWebElement& e) const = 0;
+    virtual QString     getClassSig   (const QWebElement& e) const = 0;
+    virtual QWebElement getRootElement(const QWebPage* page) const = 0;
 
     // add the faqs in json to the root document of the page
     virtual void addFAQs(const QWebPage* page, const QJsonObject& apiJson) = 0;
@@ -29,10 +29,10 @@ protected:
 class JavaSE7Visitor : public IDocVisitor
 {
 public:
-    QByteArray  getLibrary       ()                     const { return "Java SE 7"; }
-    API         getAPI           (const QWebElement& e) const;
-    QString     getClassSignature(const QWebElement& e) const;
-    QWebElement getRootElement   (const QWebPage* page) const;
+    QByteArray  getLibrary    ()                     const { return "Java SE 7"; }
+    API         getAPI        (const QWebElement& e) const;
+    QString     getClassSig   (const QWebElement& e) const;
+    QWebElement getRootElement(const QWebPage* page) const;
     void addFAQs(const QWebPage* page, const QJsonObject& apiJson);
 
 private:

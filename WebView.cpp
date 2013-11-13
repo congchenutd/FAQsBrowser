@@ -3,6 +3,7 @@
 #include "DocVisitor.h"
 #include "Settings.h"
 #include "Connection.h"
+
 #include <QApplication>
 #include <QMenu>
 #include <QMouseEvent>
@@ -12,18 +13,18 @@
 #include <QDebug>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QDesktopServices>
 
 WebView::WebView(QWidget* parent)
     : QWebView(parent),
       _page(new WebPage(this)),
-      _visitor(DocVisitorFactory::getInstance()->getVisitor("Java SE 7"))
+      _visitor(DocVisitorFactory::getInstance()->getVisitor(
+                   Settings::getInstance()->getLibrary()))
 {
     setPage(_page);
     setZoomFactor(Settings::getInstance()->getZoomFactor());
 
     connect(_page, SIGNAL(loadProgress(int)), this, SLOT(onProgress(int)));
-    connect(Connection::getInstance(), SIGNAL(queryReply(QJsonArray)),
-            this, SLOT(onQueryReply(QJsonArray)));
 }
 
 void WebView::setZoomFactor(qreal factor)
@@ -63,16 +64,15 @@ void WebView::contextMenuEvent(QContextMenuEvent* event)
         menu.addAction(pageAction(QWebPage::Reload));
 
         // try to find API
-        if(_visitor != 0)
+        API api = _visitor->getAPI(hitTest.enclosingBlockElement());
+        if(!api.getClassSignature().isEmpty())  // is a class page
         {
-            API api = _visitor->getAPI(hitTest.enclosingBlockElement());
-            if(!api.getClassSignature().isEmpty())  // is a class page
-            {
-                setAPI(api);
-                menu.addAction(QIcon(":/Images/Search.png"),
-                               tr("Search for %1").arg(api.toLowestName()),
-                               this, SLOT(onSearchAPI()));
-            }
+            setAPI(api);   // save the API current viewing
+
+            // add an option for searching this API
+            menu.addAction(QIcon(":/Images/Search.png"),
+                           tr("Search for %1").arg(api.toLowestName()),
+                           this, SLOT(onSearchAPI()));
         }
     }
     menu.exec(mapToGlobal(event->pos()));
@@ -86,30 +86,6 @@ void WebView::onSearchAPI() {
     emit apiSearch(_api);
 }
 
-void WebView::onProgress(int progress)
-{
+void WebView::onProgress(int progress) {
     _progress = progress;
-
-    // send query for the class FAQ when the page is loaded
-    if(progress == 100)
-    {
-        if(_visitor == 0)
-            return;
-        QString classSignature = _visitor->getClassSignature(_visitor->getRootElement(page()));
-        if(!classSignature.isEmpty())   // is a class page
-            Connection::getInstance()->query(_visitor->getLibrary(), classSignature);
-    }
-}
-
-void WebView::onQueryReply(const QJsonArray& APIs)
-{
-    if(APIs.empty() || _visitor == 0)
-        return;
-
-    // for each API, add a FAQ section to its document
-    for(QJsonArray::ConstIterator it = APIs.begin(); it != APIs.end(); ++it)
-    {
-        QJsonObject apiJson = (*it).toObject();
-        _visitor->addFAQs(page(), apiJson);
-    }
 }
