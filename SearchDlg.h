@@ -10,7 +10,8 @@ class SearchDlg : public QDialog
 
 public:
     SearchDlg(QWidget* parent = 0);
-    QString getQuery() const;
+    QString getQuery()    const;  // context + question
+    QString getQuestion() const;
     void setContext(const QString& context);
 
 private:

@@ -22,10 +22,10 @@ public:
     int      getProgress() const { return _progress; }
     PageRole getRole()     const { return _role;     }
     API      getAPI()      const { return _api;      }
-    QString  getQuery()    const { return _query;    }
+    QString  getQuestion()    const { return _question;    }
     void     setRole (PageRole role)        { _role  = role;  }
     void     setAPI  (const API& api)       { _api   = api;   }
-    void     setQuery(const QString& query) { _query = query; }
+    void     setQuestion(const QString& question) { _question = question; }
     void     setZoomFactor(qreal factor);
 
 protected:
@@ -45,7 +45,7 @@ private:
     int      _progress;
     PageRole _role;
     API      _api;             // api currently being read
-    QString  _query;
+    QString  _question;
     IDocVisitor* _visitor;
 };
 

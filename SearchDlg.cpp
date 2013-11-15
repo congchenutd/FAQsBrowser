@@ -5,12 +5,17 @@ SearchDlg::SearchDlg(QWidget *parent) :
 {
     ui.setupUi(this);
     resize(500, 50);
+    ui.leQuestion->setFocus();
 }
 
 QString SearchDlg::getQuery() const {
-    return ui.lineEdit->text();
+    return ui.leAPI->text() + " " + ui.leQuestion->text();
+}
+
+QString SearchDlg::getQuestion() const {
+    return ui.leQuestion->text();
 }
 
 void SearchDlg::setContext(const QString& context) {
-    ui.lineEdit->setText(context + " ");
+    ui.leAPI->setText(context);
 }

@@ -222,7 +222,7 @@ void MainWindow::onHelpful()
 {
     if(WebView* webView = currentWebView())
         Connection::getInstance()->save(webView->getAPI().toSignature(),
-                                        webView->getQuery(),
+                                        webView->getQuestion(),
                                         webView->url().toString(),
                                         webView->title());
 

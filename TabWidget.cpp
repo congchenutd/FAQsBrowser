@@ -48,7 +48,7 @@ int TabWidget::getDocTabIndex()
     return indexOf(webView);
 }
 
-int TabWidget::getSearchTabIndex(const API& api, const QString& query)
+int TabWidget::getSearchTabIndex(const API& api, const QString& query, const QString& question)
 {
     // find existing search page
     int i;
@@ -63,11 +63,11 @@ int TabWidget::getSearchTabIndex(const API& api, const QString& query)
     // load page
     webView->setRole(WebView::SEARCH_ROLE);
     webView->setAPI(api);
-    webView->setQuery(query);
+    webView->setQuestion(question);
     webView->load(QUrl("http://www.google.com/search?q=" + query));
 
     // save as an unanswered question
-    Connection::getInstance()->save(api.toSignature(), query);
+    Connection::getInstance()->save(api.toSignature(), question);
     return i;
 }
 
@@ -77,7 +77,7 @@ void TabWidget::onAPISearch(const API& api)
     dlg.setContext(api.toQueryString());
     if(dlg.exec() == QDialog::Accepted)
         setCurrentIndex(
-                    getSearchTabIndex(api, dlg.getQuery() ));
+                    getSearchTabIndex(api, dlg.getQuery(), dlg.getQuestion() ));
 }
 
 void TabWidget::onReloadTab(int index) {

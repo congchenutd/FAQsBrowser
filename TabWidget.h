@@ -24,7 +24,7 @@ public:
     WebView* getWebView(int index) const;
 
     int getDocTabIndex();
-    int getSearchTabIndex(const API& api, const QString& query);
+    int getSearchTabIndex(const API& api, const QString& query, const QString& question);
 
 public slots:
     WebView* onNewTab();
