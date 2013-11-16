@@ -18,12 +18,14 @@ public:
     virtual QString     getClassSig   (const QWebElement& e) const = 0;
     virtual QWebElement getRootElement(const QWebPage* page) const = 0;
 
-    // add the faqs in json to the root document of the page
+    // add the faqs in json to corresponding position (class or method) on the page
     virtual void addFAQs(const QWebPage* page, const QJsonObject& apiJson) = 0;
     virtual ~IDocVisitor() {}
 
 protected:
-    virtual QString createFAQsHTML(const QJsonObject& json) const = 0;
+    QString createFAQsHTML(const QJsonObject& json)      const;
+    QString createAPIsHTML(const QJsonArray&  jsonArray) const;
+    virtual QString createQuestionsHTML(const QJsonObject& json) const = 0;
 };
 
 class JavaSE7Visitor : public IDocVisitor
@@ -36,7 +38,7 @@ public:
     void addFAQs(const QWebPage* page, const QJsonObject& apiJson);
 
 private:
-    QString createFAQsHTML(const QJsonObject &json) const;
+    QString createQuestionsHTML(const QJsonObject& json) const;
 };
 
 

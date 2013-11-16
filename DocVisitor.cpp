@@ -9,6 +9,32 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
+QString IDocVisitor::createFAQsHTML(const QJsonObject &json) const
+{
+    QString html;
+    QTextStream os(&html);
+
+    os << "<dt><span class=\"strong\">FAQ:</span></dt>\r\n";  // title
+    os << createQuestionsHTML(json);                          // questions
+
+    qDebug() << html;
+    return html;
+}
+
+QString IDocVisitor::createAPIsHTML(const QJsonArray& jsonArray) const
+{
+    QString html;
+    QTextStream os(&html);
+
+    os << "<dt><span class=\"strong\">Interested APIs:</span></dt>\r\n";  // title
+//    os << createQuestionsHTML(json);                                      // questions
+
+    qDebug() << html;
+    return html;
+}
+
+////////////////////////////////////////////////////////////////////////////
+
 /// A method details section of a Java Doc page looks like
 /// <a name = ClassName>
 /// </a>
@@ -90,11 +116,11 @@ void JavaSE7Visitor::addFAQs(const QWebPage* page, const QJsonObject& apiJson)
 //        {
 //            "answers": [
 //                {
-//                    "link": "http://www.scribd.com/doc/142803504/Wrox-professional-Java-JDK-Edition",
+//                    "link": "http://www.scribd.com/",
 //                    "title": "Wrox.professional Java JDK Edition"
 //                }
 //            ],
-//            "question": "Java SE 7 AbstractAction getValue question1",
+//            "question": "question1",
 //            "users": [
 //                {
 //                    "email": "carl@gmail.com",
@@ -105,20 +131,17 @@ void JavaSE7Visitor::addFAQs(const QWebPage* page, const QJsonObject& apiJson)
 //    ]
 //}
 //
-//<dt><span class="strong">FAQs:</span></dt>
 //<ul>
-//	<li>Java SE 7 AbstractAction getValue question1 <a href="mailto:carl@gmail.com">Carl</a>
+//	<li>question1 ( <a href="mailto:carl@gmail.com">Carl</a> )
 //		<ul>
-//			<li><a href="http://www.scribd.com/doc/142803504/Wrox-professional-Java-JDK-Edition">Wrox.professional Java JDK Edition"</a></li>
+//			<li><a href="http://www.scribd.com/">Wrox.professional Java JDK Edition"</a></li>
 //		</ul>
 //	</li>
 //</ul>
-QString JavaSE7Visitor::createFAQsHTML(const QJsonObject& json) const
+QString JavaSE7Visitor::createQuestionsHTML(const QJsonObject &json) const
 {
     QString html;
     QTextStream os(&html);
-
-    os << "<dt><span class=\"strong\">FAQ:</span></dt>\r\n";
 
     QJsonArray questions = json.value("questions").toArray();
     os << "<ul>\r\n";
@@ -162,8 +185,6 @@ QString JavaSE7Visitor::createFAQsHTML(const QJsonObject& json) const
            << "\t</li>\r\n";
     }
     os << "</ul>\r\n";
-
-    qDebug() << html;
     return html;
 }
 
