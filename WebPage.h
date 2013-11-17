@@ -17,12 +17,14 @@ public:
 private slots:
     void onLoaded();
     void onQueryReply(const QJsonArray& APIs);
+    void onPersonalProfileReply(const QJsonObject &jsonObj);
 
 protected:
     bool acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type);
     QWebPage* createWindow(QWebPage::WebWindowType type);
 
 private:
+    void loadPersonalProfile(const QString &userName);
     static API urlToAPI(const QString& url);
 
 private:

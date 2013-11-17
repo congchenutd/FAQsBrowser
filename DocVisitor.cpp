@@ -1,4 +1,5 @@
 #include "DocVisitor.h"
+#include "HTMLCreator.h"
 #include <QObject>
 #include <QString>
 #include <QWebElement>
@@ -8,32 +9,6 @@
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
-
-QString IDocVisitor::createFAQsHTML(const QJsonObject &json) const
-{
-    QString html;
-    QTextStream os(&html);
-
-    os << "<dt><span class=\"strong\">FAQ:</span></dt>\r\n";  // title
-    os << createQuestionsHTML(json);                          // questions
-
-    qDebug() << html;
-    return html;
-}
-
-QString IDocVisitor::createAPIsHTML(const QJsonArray& jsonArray) const
-{
-    QString html;
-    QTextStream os(&html);
-
-    os << "<dt><span class=\"strong\">Interested APIs:</span></dt>\r\n";  // title
-//    os << createQuestionsHTML(json);                                      // questions
-
-    qDebug() << html;
-    return html;
-}
-
-////////////////////////////////////////////////////////////////////////////
 
 /// A method details section of a Java Doc page looks like
 /// <a name = ClassName>
@@ -90,13 +65,14 @@ QWebElement JavaSE7Visitor::getRootElement(const QWebPage* page) const
 void JavaSE7Visitor::addFAQs(const QWebPage* page, const QJsonObject& apiJson)
 {
     API api = API::fromJson(apiJson);
+    QString html = HTMLCreator().createFAQ(apiJson);
 
     if(api.getMethodSignature().isEmpty())   // for class
     {
         QWebElement e = getRootElement(page).findFirst("div[class=description]");
         e = e.findFirst("ul[class=blockList]");
         e = e.findFirst("li[class=blockList]");
-        e.appendInside(createFAQsHTML(apiJson));
+        e.appendInside(html);
     }
     else                                      // for method or attribute
     {
@@ -105,87 +81,8 @@ void JavaSE7Visitor::addFAQs(const QWebPage* page, const QJsonObject& apiJson)
                                                        .arg(api.getMethodSignature()));
         e = e.nextSibling();    // ul
         e = e.findFirst("dl");  // dl
-        e.appendInside(createFAQsHTML(apiJson));
+        e.appendInside(html);
     }
-}
-
-// e.g.
-//{
-//    "api": "javax.swing.AbstractAction.getValue(java.lang.String)",
-//    "questions": [
-//        {
-//            "answers": [
-//                {
-//                    "link": "http://www.scribd.com/",
-//                    "title": "Wrox.professional Java JDK Edition"
-//                }
-//            ],
-//            "question": "question1",
-//            "users": [
-//                {
-//                    "email": "carl@gmail.com",
-//                    "name": "Carl"
-//                }
-//            ]
-//        }
-//    ]
-//}
-//
-//<ul>
-//	<li>question1 ( <a href="mailto:carl@gmail.com">Carl</a> )
-//		<ul>
-//			<li><a href="http://www.scribd.com/">Wrox.professional Java JDK Edition"</a></li>
-//		</ul>
-//	</li>
-//</ul>
-QString JavaSE7Visitor::createQuestionsHTML(const QJsonObject &json) const
-{
-    QString html;
-    QTextStream os(&html);
-
-    QJsonArray questions = json.value("questions").toArray();
-    os << "<ul>\r\n";
-
-    for(QJsonArray::Iterator itq = questions.begin(); itq != questions.end(); ++itq)
-    {
-        QJsonObject question = (*itq).toObject();
-        os << "\t<li>Q: " << question.value("question").toString() << "\r\n";
-
-        QJsonArray users = question.value("users").toArray();
-        os << "\t\t (";
-        for(QJsonArray::Iterator itu = users.begin(); itu != users.end(); ++itu)
-        {
-            QJsonObject user = (*itu).toObject();
-            os << "<a target = \"_blank\" href=\"mailto:" << user.value("email").toString() << "\"> "
-               << user.value("name").toString() << "</a>";
-        }
-        os << " )\r\n";
-
-        QJsonArray answers = question.value("answers").toArray();
-        os << "\t\t<ul>\r\n";
-
-        if(answers.isEmpty()) {
-            os << "\t\t\t<li type=\"square\">Not answered!</li>" ;
-        }
-        else {
-            for(QJsonArray::Iterator ita = answers.begin(); ita != answers.end(); ++ita)
-            {
-                QJsonObject answer = (*ita).toObject();
-                QString link  = answer.value("link") .toString();
-                QString title = answer.value("title").toString();
-                if(title.isEmpty())
-                    title = "Link";
-                os << "\t\t\t<li type=\"square\">A: <a target=\"_blank\" href=\""
-                   << link << "\">"
-                   << title << "</a>\r\n"
-                   << "\t\t\t</li>\r\n";
-            }
-        }
-        os << "\t\t</ul>\r\n"
-           << "\t</li>\r\n";
-    }
-    os << "</ul>\r\n";
-    return html;
 }
 
 /////////////////////////////////////////////////////////////////////

@@ -23,7 +23,9 @@ Main.cpp \
     WebPage.cpp \
     API.cpp \
     Connection.cpp \
-    Settings.cpp
+    Settings.cpp \
+    HTMLCreator.cpp \
+    Template.cpp
 
 HEADERS  += MainWindow.h \
     TabWidget.h \
@@ -36,7 +38,9 @@ HEADERS  += MainWindow.h \
     WebPage.h \
     API.h \
     Connection.h \
-    Settings.h
+    Settings.h \
+    HTMLCreator.h \
+    Template.h
 
 FORMS    += MainWindow.ui \
     OptionsDlg.ui \

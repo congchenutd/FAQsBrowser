@@ -37,7 +37,7 @@ QString API::toLowestName() const {
 API API::fromJson(const QJsonObject& json)
 {
     API result;
-    QString apiSig = json.value("api").toString();          // package.class.method(params)
+    QString apiSig = json.value("apisig").toString();        // package.class.method(params)
 
     QString methodSig;
     int params = QRegExp("\\(.*\\)").indexIn(apiSig);

@@ -44,7 +44,7 @@ void Connection::save(const QString& apiSig, const QString& question,
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
-    QString url = tr("http://%1:%2/?action=save&username=%3&email=%4&api=%5&question=%6")
+    QString url = tr("http://%1:%2/?action=save&username=%3&email=%4&apisig=%5&question=%6")
             .arg(_settings->getServerIP())
             .arg(_settings->getServerPort())
             .arg(_settings->getUserName())
@@ -82,7 +82,7 @@ void Connection::logAPI(const QString& apiSig)
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
-    QString url = tr("http://%1:%2/?action=logapi&username=%3&email=%4&api=%5")
+    QString url = tr("http://%1:%2/?action=logapi&username=%3&email=%4&apisig=%5")
             .arg(_settings->getServerIP())
             .arg(_settings->getServerPort())
             .arg(_settings->getUserName())
@@ -122,6 +122,33 @@ void Connection::onQueryReply(QNetworkReply* reply)
         QJsonArray APIs = doc.array();
         if(!APIs.isEmpty())
             emit queryReply(APIs);
+    }
+}
+
+void Connection::personalProfile(const QString& userName)
+{
+    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished    (QNetworkReply*)),
+            this,    SLOT  (onPersonalProfileReply(QNetworkReply*)));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
+
+    QString url = tr("http://%1:%2/?action=personal&username=%3")
+            .arg(_settings->getServerIP())
+            .arg(_settings->getServerPort())
+            .arg(userName);
+    manager->get(QNetworkRequest(QUrl(url)));
+}
+
+void Connection::onPersonalProfileReply(QNetworkReply* reply)
+{
+    QByteArray data = reply->readAll();
+    QJsonParseError err;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &err);
+    if(err.error == QJsonParseError::NoError)
+    {
+        QJsonObject profile = doc.object();
+        if(!profile.isEmpty())
+            emit personalProfileReply(profile);
     }
 }
 

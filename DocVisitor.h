@@ -21,11 +21,6 @@ public:
     // add the faqs in json to corresponding position (class or method) on the page
     virtual void addFAQs(const QWebPage* page, const QJsonObject& apiJson) = 0;
     virtual ~IDocVisitor() {}
-
-protected:
-    QString createFAQsHTML(const QJsonObject& json)      const;
-    QString createAPIsHTML(const QJsonArray&  jsonArray) const;
-    virtual QString createQuestionsHTML(const QJsonObject& json) const = 0;
 };
 
 class JavaSE7Visitor : public IDocVisitor
@@ -36,9 +31,6 @@ public:
     QString     getClassSig   (const QWebElement& e) const;
     QWebElement getRootElement(const QWebPage* page) const;
     void addFAQs(const QWebPage* page, const QJsonObject& apiJson);
-
-private:
-    QString createQuestionsHTML(const QJsonObject& json) const;
 };
 
 

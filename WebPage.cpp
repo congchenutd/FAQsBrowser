@@ -6,6 +6,7 @@
 #include "Connection.h"
 #include "Settings.h"
 #include "API.h"
+#include "HTMLCreator.h"
 
 #include <QDesktopServices>
 #include <QNetworkRequest>
@@ -46,14 +47,31 @@ void WebPage::onQueryReply(const QJsonArray& APIs)
     }
 }
 
+void WebPage::loadPersonalProfile(const QString& userName)
+{
+    connect(Connection::getInstance(), SIGNAL(personalProfileReply(QJsonObject)),
+            this, SLOT(onPersonalProfileReply(QJsonObject)));
+    Connection::getInstance()->personalProfile(userName);
+}
+
+void WebPage::onPersonalProfileReply(const QJsonObject& jsonObj)
+{
+    mainFrame()->setHtml(HTMLCreator().createProfilePage(jsonObj));
+    disconnect(Connection::getInstance(), SIGNAL(personalProfileReply(QJsonObject)),
+            this, SLOT(onPersonalProfileReply(QJsonObject)));  // avoid being updated to other's profile
+}
+
 bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type)
 {
     if(type == NavigationTypeLinkClicked)
     {
-        // somehow mailto is not handled by default
-        if(request.url().toString().startsWith("mailto:", Qt::CaseInsensitive))
+        // personal profile link
+        if(request.url().toString().startsWith("profile:", Qt::CaseInsensitive))
         {
-            QDesktopServices::openUrl(request.url());
+            WebView* newView = MainWindow::getInstance()->getTabWidget()->onNewTab();
+            newView->setRole(WebView::PROFILE_ROLE);
+            QString userName = request.url().toString().remove("profile:");
+            newView->webPage()->loadPersonalProfile(userName);
             return false;
         }
 

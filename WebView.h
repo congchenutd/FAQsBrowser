@@ -14,7 +14,7 @@ class WebView : public QWebView
     Q_OBJECT
 
 public:
-    typedef enum {NULL_ROLE, DOC_ROLE, SEARCH_ROLE, RESULT_ROLE} PageRole;
+    typedef enum {NULL_ROLE, DOC_ROLE, SEARCH_ROLE, RESULT_ROLE, PROFILE_ROLE} PageRole;
 
 public:
     WebView(QWidget* parent = 0);
@@ -27,6 +27,7 @@ public:
     void     setAPI  (const API& api)       { _api   = api;   }
     void     setQuestion(const QString& question) { _question = question; }
     void     setZoomFactor(qreal factor);
+    WebPage* webPage() { return _page; }
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event);
