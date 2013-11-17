@@ -96,8 +96,9 @@ QString HTMLCreator::createProfilePage(const QJsonObject& profileJson) const
     Template profilePageTemp("./Templates/ProfilePage.html");
     QString name  = profileJson.value("name").toString();
     profilePageTemp.setValue("Name",           name);
-    profilePageTemp.setValue("Profile",        createProfile(profileJson));
-    profilePageTemp.setValue("InterestedAPIs", createAPIs(profileJson));
+    profilePageTemp.setValue("Profile",        createProfile     (profileJson));
+    profilePageTemp.setValue("InterestedAPIs", createAPIs        (profileJson));
+    profilePageTemp.setValue("RelatedUsers",   createRelatedUsers(profileJson));
     return profilePageTemp.toString();
 }
 
@@ -127,4 +128,22 @@ QString HTMLCreator::createAPIs(const QJsonObject& profileJson) const
         apisTemp.addValue("API", apiTemp.toString());
     }
     return apisTemp.toString();
+}
+
+QString HTMLCreator::createRelatedUsers(const QJsonObject &profileJson) const
+{
+    Template usersTemp("./Templates/RelatedUsers.html");
+    QJsonArray users = profileJson.value("relatedusers").toArray();
+    for(QJsonArray::Iterator it = users.begin(); it != users.end(); ++it)
+    {
+        QJsonObject user = (*it).toObject();
+        QString name  = user.value("name").toString();
+        QString email = user.value("email").toString();
+
+        Template userTemp("./Templates/RelatedUser.html");
+        userTemp.setValue("Name", name);
+
+        usersTemp.addValue("RelatedUser", userTemp.toString());
+    }
+    return usersTemp.toString();
 }
