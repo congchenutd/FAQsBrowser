@@ -66,9 +66,9 @@ QString HTMLCreator::createQuestions(const QJsonObject& apiJson) const
 
         // answers
         QJsonArray answers = question.value("answers").toArray();
-        Template answerTemp("./Templates/Answer.html");
         if(answers.isEmpty())
         {
+            Template answerTemp("./Templates/Answer.html");
             answerTemp.setValue("Title", "Not answered!");
             questionTemp.addValue("Answer",  answerTemp.toString());
         }
@@ -81,6 +81,7 @@ QString HTMLCreator::createQuestions(const QJsonObject& apiJson) const
                 if(title.isEmpty())
                     title = "Link";
 
+                Template answerTemp("./Templates/Answer.html");
                 answerTemp.setValue("Title", title);                      // format answer
                 answerTemp.setValue("Link",  link);
                 questionTemp.addValue("Answer",  answerTemp.toString());  // add to the question
