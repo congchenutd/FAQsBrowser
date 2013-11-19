@@ -68,10 +68,8 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
         // personal profile link
         if(request.url().toString().startsWith("profile:", Qt::CaseInsensitive))
         {
-            WebView* newView = MainWindow::getInstance()->getTabWidget()->onNewTab();
-            newView->setRole(WebView::PROFILE_ROLE);
             QString userName = request.url().toString().remove("profile:");
-            newView->webPage()->loadPersonalProfile(userName);
+            MainWindow::getInstance()->getTabWidget()->newPersonalTab(userName);
             return false;
         }
 

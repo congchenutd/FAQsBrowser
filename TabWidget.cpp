@@ -4,6 +4,7 @@
 #include "SearchDlg.h"
 #include "Connection.h"
 #include "Settings.h"
+#include "WebPage.h"
 
 TabWidget::TabWidget(QWidget *parent)
     : QTabWidget(parent),
@@ -69,6 +70,13 @@ int TabWidget::getSearchTabIndex(const API& api, const QString& query, const QSt
     // save as an unanswered question
     Connection::getInstance()->save(api.toSignature(), question);
     return i;
+}
+
+void TabWidget::newPersonalTab(const QString& userName)
+{
+    WebView* webView = onNewTab();
+    webView->setRole(WebView::PROFILE_ROLE);
+    webView->webPage()->loadPersonalProfile(userName);
 }
 
 void TabWidget::onAPISearch(const API& api)

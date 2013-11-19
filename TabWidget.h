@@ -26,6 +26,8 @@ public:
     int getDocTabIndex();
     int getSearchTabIndex(const API& api, const QString& query, const QString& question);
 
+    void newPersonalTab(const QString& userName);
+
 public slots:
     WebView* onNewTab();
     void onCloseTab(int index = -1);

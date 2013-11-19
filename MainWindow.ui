@@ -18,7 +18,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="Resource.qrc">
-    <normaloff>:/Images/Question.png</normaloff>:/Images/Question.png</iconset>
+    <normaloff>:/Images/FAQ.png</normaloff>:/Images/FAQ.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout"/>
@@ -64,6 +64,7 @@
     <property name="title">
      <string>Tab</string>
     </property>
+    <addaction name="actionPersonal"/>
    </widget>
    <widget class="QMenu" name="menuNavigate">
     <property name="title">
@@ -252,6 +253,18 @@
    </property>
    <property name="visible">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionPersonal">
+   <property name="icon">
+    <iconset resource="Resource.qrc">
+     <normaloff>:/Images/Personal.png</normaloff>:/Images/Personal.png</iconset>
+   </property>
+   <property name="text">
+    <string>Personal profile</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>
