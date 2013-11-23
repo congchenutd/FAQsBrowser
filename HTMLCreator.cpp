@@ -99,6 +99,9 @@ QString HTMLCreator::createProfilePage(const QJsonObject& profileJson) const
     profilePageTemp.setValue("Profile",        createProfile     (profileJson));
     profilePageTemp.setValue("InterestedAPIs", createAPIs        (profileJson));
     profilePageTemp.setValue("RelatedUsers",   createRelatedUsers(profileJson));
+
+    qDebug() << profilePageTemp.toString();
+
     return profilePageTemp.toString();
 }
 
