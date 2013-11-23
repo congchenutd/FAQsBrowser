@@ -222,10 +222,13 @@ void MainWindow::onReloadStop()
 void MainWindow::onHelpful()
 {
     if(WebView* webView = currentWebView())
+    {
         Connection::getInstance()->save(webView->getAPI().toSignature(),
                                         webView->getQuestion(),
                                         webView->url().toString(),
                                         webView->title());
+        // ask the view to refresh the FAQs
+    }
 
     _tabWidget->onCloseTab(_tabWidget->currentIndex());
 }

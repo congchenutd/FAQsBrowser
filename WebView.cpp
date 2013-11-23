@@ -71,7 +71,7 @@ void WebView::contextMenuEvent(QContextMenuEvent* event)
 
             // add an option for searching this API
             menu.addAction(QIcon(":/Images/Search.png"),
-                           tr("Search for %1").arg(api.toLowestName()),
+                           tr("Search for %1 on the Web").arg(api.toLowestName()),
                            this, SLOT(onSearchAPI()));
         }
     }
