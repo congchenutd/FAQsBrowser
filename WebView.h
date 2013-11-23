@@ -22,12 +22,11 @@ public:
     int      getProgress() const { return _progress; }
     PageRole getRole()     const { return _role;     }
     API      getAPI()      const { return _api;      }
-    QString  getQuestion()    const { return _question;    }
+    QString  getQuestion() const { return _question; }
     void     setRole (PageRole role)        { _role  = role;  }
     void     setAPI  (const API& api)       { _api   = api;   }
     void     setQuestion(const QString& question) { _question = question; }
     void     setZoomFactor(qreal factor);
-    WebPage* webPage() { return _page; }
 
 protected:
     void contextMenuEvent(QContextMenuEvent* event);

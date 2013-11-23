@@ -14,7 +14,6 @@ TabWidget::TabWidget(QWidget *parent)
     setElideMode(Qt::ElideRight);
     setDocumentMode(true);
 
-    connect(_tabBar, SIGNAL(newTab()),               this, SLOT(onNewTab()));
     connect(_tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(onCloseTab(int)));
     connect(_tabBar, SIGNAL(closeOtherTabs(int)),    this, SLOT(onCloseOtherTabs(int)));
     connect(_tabBar, SIGNAL(closeAllTabs()),         this, SLOT(onCloseAllTabs()));
@@ -28,11 +27,8 @@ WebView* TabWidget::getCurrentWebView() const {
     return getWebView(currentIndex());
 }
 
-WebView* TabWidget::getWebView(int index) const
-{
-    if(WebView* webView = qobject_cast<WebView*>(widget(index)))
-        return webView;
-    return 0;
+WebView* TabWidget::getWebView(int index) const {
+    return qobject_cast<WebView*>(widget(index));
 }
 
 int TabWidget::getDocTabIndex()
@@ -43,8 +39,7 @@ int TabWidget::getDocTabIndex()
             return i;
 
     // or create a new one
-    WebView* webView = onNewTab();
-    webView->setRole(WebView::DOC_ROLE);
+    WebView* webView = newTab(WebView::DOC_ROLE);
     webView->load(QUrl(Settings::getInstance()->getDocUrl()));
     return indexOf(webView);
 }
@@ -58,11 +53,10 @@ int TabWidget::getSearchTabIndex(const API& api, const QString& query, const QSt
             break;
 
     // create a new view or using the existing one
-    WebView* webView = (i == count()) ? onNewTab()
+    WebView* webView = (i == count()) ? newTab(WebView::SEARCH_ROLE)
                                       : getWebView(i);
 
     // load page
-    webView->setRole(WebView::SEARCH_ROLE);
     webView->setAPI(api);
     webView->setQuestion(question);
     webView->load(QUrl("http://www.google.com/search?q=" + query));
@@ -72,11 +66,8 @@ int TabWidget::getSearchTabIndex(const API& api, const QString& query, const QSt
     return i;
 }
 
-void TabWidget::newPersonalTab(const QString& userName)
-{
-    WebView* webView = onNewTab();
-    webView->setRole(WebView::PROFILE_ROLE);
-    webView->webPage()->loadPersonalProfile(userName);
+void TabWidget::newPersonalTab(const QString& userName) {
+    newTab(WebView::PROFILE_ROLE)->getWebPage()->loadPersonalProfile(userName);
 }
 
 void TabWidget::onAPISearch(const API& api)
@@ -85,11 +76,11 @@ void TabWidget::onAPISearch(const API& api)
     dlg.setContext(api.toQueryString());
     if(dlg.exec() == QDialog::Accepted)
         setCurrentIndex(
-                    getSearchTabIndex(api, dlg.getQuery(), dlg.getQuestion() ));
+            getSearchTabIndex(api, dlg.getQuery(), dlg.getQuestion() ));
 }
 
 void TabWidget::onReloadTab(int index) {
-    if (WebView* webView = getWebView(index))
+    if(WebView* webView = getWebView(index))
         webView->reload();
 }
 
@@ -116,9 +107,10 @@ void TabWidget::onCurrentChanged(int index)
     prevTabIndex = index;
 }
 
-WebView* TabWidget::onNewTab()
+WebView* TabWidget::newTab(WebView::PageRole role)
 {
     WebView* webView = new WebView;
+    webView->setRole(role);
 
     connect(webView, SIGNAL(loadStarted()),         this, SLOT(onWebViewLoadStarted()));
     connect(webView, SIGNAL(loadFinished(bool)),    this, SLOT(onWebViewIconChanged()));

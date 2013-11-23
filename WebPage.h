@@ -15,17 +15,16 @@ public:
     WebPage(QObject* parent = 0);
     void loadPersonalProfile(const QString& userName);
 
+public slots:
+    void requestFAQs();
+
 private slots:
-    void onLoaded();
     void onQueryReply(const QJsonArray& APIs);
     void onPersonalProfileReply(const QJsonObject &jsonObj);
 
 protected:
     bool acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type);
     QWebPage* createWindow(QWebPage::WebWindowType type);
-
-private:
-    static API urlToAPI(const QString& url);
 
 private:
     IDocVisitor* _visitor;

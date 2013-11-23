@@ -5,6 +5,7 @@
 #include "OptionsDlg.h"
 #include "Connection.h"
 #include "Settings.h"
+#include "WebPage.h"
 #include <QMessageBox>
 #include <QWebSettings>
 #include <QProgressBar>
@@ -40,8 +41,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui.actionShowSearch->setShortcut(QKeySequence::Find);
 
     TabBar* tabBar = static_cast<TabBar*>(_tabWidget->tabBar());
-    ui.menuTab->addAction(tabBar->getActionNew());
-    ui.menuTab->addSeparator();
     ui.menuTab->addAction(tabBar->getActionClose());
     ui.menuTab->addAction(tabBar->getActionCloseOthers());
     ui.menuTab->addAction(tabBar->getActionCloseAll());
@@ -56,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qApp->setFont(Settings::getInstance()->getFont());
 
     onDocPage();
-    toggleReloadStop(false);
+    toggleReloadStop(false);  // update reload/stop button status
 
     connect(ui.actionAbout,      SIGNAL(triggered()), this, SLOT(onAbout()));
     connect(ui.actionOptions,    SIGNAL(triggered()), this, SLOT(onOptions()));
@@ -83,9 +82,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(_tabWidget, SIGNAL(loadProgress(int)),            this, SLOT(onLoadProgress(int)));
     connect(_tabWidget, SIGNAL(currentTitleChanged(QString)), this, SLOT(onCurrentTitleChanged(QString)));
+    connect(_tabWidget, SIGNAL(currentChanged(int)),          this, SLOT(onCurrentTabChanged()));
     connect(_tabWidget, SIGNAL(historyChanged()),             this, SLOT(onHistoryChanged()));
     connect(_tabWidget, SIGNAL(linkHovered(QString)), statusBar(), SLOT(showMessage(QString)));
+}
 
+WebView *MainWindow::newTab(WebView::PageRole role) {
+    return _tabWidget->newTab(role);
 }
 
 MainWindow* MainWindow::_instance = 0;
@@ -96,7 +99,7 @@ MainWindow* MainWindow::getInstance() {
 
 void MainWindow::onAbout() {
     QMessageBox::about(this, tr("About"),
-                       tr("<h3><b>FAQsBrowser: Embedding Crowdsourced FAQs to Official API Document.</b></h3>"
+                       tr("<h3><b>FAQ Browser: Embedding Crowdsourced FAQs to Official API Documentation.</b></h3>"
                           "<p><a href=mailto:CongChenUTD@Gmail.com>CongChenUTD@Gmail.com</a></p>"));
 }
 
@@ -169,19 +172,20 @@ void MainWindow::onHighlight(const QString& target, bool highlight, bool matchCa
 
 void MainWindow::onLoadProgress(int progress)
 {
-    _progressBar->setValue(progress);
     bool loading = 0 < progress && progress < 100;
+    _progressBar->setValue(progress);
     _progressBar->setVisible(loading);
     toggleReloadStop(loading);
 }
 
-void MainWindow::onCurrentTitleChanged(const QString& title)
-{
+void MainWindow::onCurrentTitleChanged(const QString& title) {
     setWindowTitle(title.isEmpty() ? tr("FAQ Browser")
                                    : tr("%1 - FAQ Browser").arg(title));
+    onCurrentTabChanged();
+}
 
-    // Urgly: the following should be in a separate slot for "TabWidget::currentChanged()"
-    // which represent its function more intuitively
+void MainWindow::onCurrentTabChanged()
+{
     if(WebView* webView = currentWebView())
     {
         ui.actionHelpful   ->setVisible(webView->getRole() == WebView::RESULT_ROLE);
@@ -222,13 +226,10 @@ void MainWindow::onReloadStop()
 void MainWindow::onHelpful()
 {
     if(WebView* webView = currentWebView())
-    {
         Connection::getInstance()->save(webView->getAPI().toSignature(),
                                         webView->getQuestion(),
                                         webView->url().toString(),
                                         webView->title());
-        // ask the view to refresh the FAQs
-    }
 
     _tabWidget->onCloseTab(_tabWidget->currentIndex());
 }

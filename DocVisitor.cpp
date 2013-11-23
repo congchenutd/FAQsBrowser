@@ -1,5 +1,6 @@
 #include "DocVisitor.h"
 #include "HTMLCreator.h"
+#include "Settings.h"
 #include <QObject>
 #include <QString>
 #include <QWebElement>
@@ -60,6 +61,25 @@ QWebElement JavaSE7Visitor::getRootElement(const QWebPage* page) const
         if(frame->frameName() == "classFrame")  // classFrame contains class details
             return frame->documentElement();
     return QWebElement();
+}
+
+// from http://docs.oracle.com/javase/7/docs/api/javax/swing/AbstractAction.html#setEnabled(boolean)
+// to Java SE 7; javax.swing.AbstractAction.setEnabled(boolean)
+API JavaSE7Visitor::urlToAPI(const QString& url) const
+{
+    API result;
+    QString documentRoot = Settings::getInstance()->getDocUrl();
+    QString link = QString(url);
+    link.remove(documentRoot);
+    link.remove(".html");
+    link.remove(".htm");
+    link.replace("/", ".");
+
+    result.setLibrary(Settings::getInstance()->getLibrary());
+    result.setClassSignature (link.section("#", 0, 0));
+    result.setMethodSignature(link.section("#", 1, 1));
+
+    return result;
 }
 
 void JavaSE7Visitor::addFAQs(const QWebPage* page, const QJsonObject& apiJson)

@@ -8,12 +8,8 @@
 #include <QMenu>
 #include <QMouseEvent>
 #include <QWebHitTestResult>
-#include <QNetworkReply>
 #include <QWebElement>
 #include <QDebug>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QDesktopServices>
 
 WebView::WebView(QWidget* parent)
     : QWebView(parent),
@@ -23,7 +19,6 @@ WebView::WebView(QWidget* parent)
 {
     setPage(_page);
     setZoomFactor(Settings::getInstance()->getZoomFactor());
-
     connect(_page, SIGNAL(loadProgress(int)), this, SLOT(onProgress(int)));
 }
 

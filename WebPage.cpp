@@ -21,12 +21,12 @@ WebPage::WebPage(QObject* parent)
       _visitor(DocVisitorFactory::getInstance()->getVisitor(
                    Settings::getInstance()->getLibrary()))
 {
-    connect(this, SIGNAL(loadFinished(bool)), this, SLOT(onLoaded()));
+    connect(this, SIGNAL(loadFinished(bool)), this, SLOT(requestFAQs()));
     connect(Connection::getInstance(), SIGNAL(queryReply(QJsonArray)),
             this, SLOT(onQueryReply(QJsonArray)));
 }
 
-void WebPage::onLoaded()
+void WebPage::requestFAQs()
 {
     // when the page is loaded, query for the FAQ for this class
     QString classSig = _visitor->getClassSig(_visitor->getRootElement(this));
@@ -51,14 +51,14 @@ void WebPage::loadPersonalProfile(const QString& userName)
 {
     connect(Connection::getInstance(), SIGNAL(personalProfileReply(QJsonObject)),
             this, SLOT(onPersonalProfileReply(QJsonObject)));
-    Connection::getInstance()->personalProfile(userName);
+    Connection::getInstance()->personalProfile(userName);  // request profile info
 }
 
 void WebPage::onPersonalProfileReply(const QJsonObject& jsonObj)
 {
     mainFrame()->setHtml(HTMLCreator().createProfilePage(jsonObj));
     disconnect(Connection::getInstance(), SIGNAL(personalProfileReply(QJsonObject)),
-            this, SLOT(onPersonalProfileReply(QJsonObject)));  // avoid being updated to other's profile
+               this, SLOT(onPersonalProfileReply(QJsonObject)));  // avoid updating others' profile
 }
 
 bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type)
@@ -69,18 +69,22 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
         if(request.url().toString().startsWith("profile:", Qt::CaseInsensitive))
         {
             QString userName = request.url().toString().remove("profile:");
-            MainWindow::getInstance()->getTabWidget()->newPersonalTab(userName);
+            MainWindow::getInstance()->newTab(WebView::PROFILE_ROLE)
+                                        ->getWebPage()
+                                            ->loadPersonalProfile(userName);
             return false;
         }
 
         WebView* thisView = static_cast<WebView*>(view());
+
+        // document page
         if(thisView->getRole() == WebView::DOC_ROLE)
         {
             QString url = request.url().toString();
 
             // document link clicked
             if(url.startsWith(Settings::getInstance()->getDocUrl()))
-                Connection::getInstance()->logAPI(urlToAPI(url).toSignature());
+                Connection::getInstance()->logAPI(_visitor->urlToAPI(url).toSignature());
             // external link (answer link) clicked
             else
                 Connection::getInstance()->logAnswer(url);
@@ -89,8 +93,7 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
         // links on the search page open in new tab
         if(thisView->getRole() == WebView::SEARCH_ROLE)
         {
-            WebView* newView = MainWindow::getInstance()->getTabWidget()->onNewTab();
-            newView->setRole (WebView::RESULT_ROLE);
+            WebView* newView = MainWindow::getInstance()->newTab(WebView::RESULT_ROLE);
             newView->setAPI     (thisView->getAPI());    // transfer the attributes
             newView->setQuestion(thisView->getQuestion());
             newView->load(request);
@@ -102,24 +105,5 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
 
 // always open in tab
 QWebPage* WebPage::createWindow(QWebPage::WebWindowType) {
-    return MainWindow::getInstance()->getTabWidget()->onNewTab()->page();
-}
-
-// from http://docs.oracle.com/javase/7/docs/api/javax/swing/AbstractAction.html#setEnabled(boolean)
-// to Java SE 7; javax.swing.AbstractAction.setEnabled(boolean)
-API WebPage::urlToAPI(const QString& url)
-{
-    API result;
-    QString documentRoot = Settings::getInstance()->getDocUrl();
-    QString link = QString(url);
-    link.remove(documentRoot);
-    link.remove(".html");
-    link.remove(".htm");
-    link.replace("/", ".");
-
-    result.setLibrary(Settings::getInstance()->getLibrary());
-    result.setClassSignature (link.section("#", 0, 0));
-    result.setMethodSignature(link.section("#", 1, 1));
-
-    return result;
+    return MainWindow::getInstance()->newTab()->page();
 }

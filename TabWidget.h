@@ -26,10 +26,10 @@ public:
     int getDocTabIndex();
     int getSearchTabIndex(const API& api, const QString& query, const QString& question);
 
+    WebView* newTab(WebView::PageRole role = WebView::NULL_ROLE);
     void newPersonalTab(const QString& userName);
 
 public slots:
-    WebView* onNewTab();
     void onCloseTab(int index = -1);
 
 private slots:

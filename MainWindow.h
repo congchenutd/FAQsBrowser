@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "ui_MainWindow.h"
+#include "WebView.h"
 
 class TabWidget;
 class WebView;
@@ -13,7 +14,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget* parent = 0);
-    TabWidget* getTabWidget() const { return _tabWidget; }
+    WebView* newTab(WebView::PageRole role = WebView::NULL_ROLE);
 
     static MainWindow* getInstance();
 
@@ -31,6 +32,7 @@ private slots:
     void onHighlight(const QString& target, bool highlight, bool matchCase);
     void onLoadProgress(int progress);
     void onCurrentTitleChanged(const QString& title);
+    void onCurrentTabChanged();
     void onBack();
     void onForward();
     void onHistoryChanged();
