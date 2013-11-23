@@ -69,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui.actionReloadStop, SIGNAL(triggered()), this, SLOT(onReloadStop()));
     connect(ui.actionHelpful,    SIGNAL(triggered()), this, SLOT(onHelpful()));
     connect(ui.actionNotHelpful, SIGNAL(triggered()), this, SLOT(onNotHelpful()));
+    connect(ui.actionPersonal,   SIGNAL(triggered()), this, SLOT(onPersonal()));
 
     connect(ui.actionShowSearch,   SIGNAL(toggled(bool)), this, SLOT(onShowSearch  (bool)));
     connect(ui.actionZoomTextOnly, SIGNAL(toggled(bool)), this, SLOT(onZoomTextOnly(bool)));
@@ -221,16 +222,23 @@ void MainWindow::onReloadStop()
 void MainWindow::onHelpful()
 {
     if(WebView* webView = currentWebView())
+    {
         Connection::getInstance()->save(webView->getAPI().toSignature(),
                                         webView->getQuestion(),
                                         webView->url().toString(),
                                         webView->title());
+        // ask the view to refresh the FAQs
+    }
 
     _tabWidget->onCloseTab(_tabWidget->currentIndex());
 }
 
 void MainWindow::onNotHelpful() {
     _tabWidget->onCloseTab(_tabWidget->currentIndex());
+}
+
+void MainWindow::onPersonal() {
+    _tabWidget->newPersonalTab(Settings::getInstance()->getUserName());
 }
 
 WebView* MainWindow::currentWebView() const {

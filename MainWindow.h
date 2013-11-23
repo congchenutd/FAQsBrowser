@@ -37,6 +37,7 @@ private slots:
     void onReloadStop();
     void onHelpful();
     void onNotHelpful();
+    void onPersonal();
 
 private:
     WebView* currentWebView() const;

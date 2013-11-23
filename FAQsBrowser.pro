@@ -4,7 +4,7 @@ win32 {
     RC_FILE = Resource.rc
 }
 macx {
-    ICON = Images/Question.icns
+	ICON = Images/FAQ.icns
 }
 
 TARGET = FAQsBrowser

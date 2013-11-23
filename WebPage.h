@@ -13,6 +13,7 @@ class WebPage : public QWebPage
 
 public:
     WebPage(QObject* parent = 0);
+    void loadPersonalProfile(const QString& userName);
 
 private slots:
     void onLoaded();
@@ -24,7 +25,6 @@ protected:
     QWebPage* createWindow(QWebPage::WebWindowType type);
 
 private:
-    void loadPersonalProfile(const QString &userName);
     static API urlToAPI(const QString& url);
 
 private:

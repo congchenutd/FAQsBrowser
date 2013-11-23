@@ -9,5 +9,7 @@
         <file>Images/Home.png</file>
         <file>Images/No.png</file>
         <file>Images/Yes.png</file>
+        <file>Images/Personal.png</file>
+        <file>Images/FAQ.png</file>
     </qresource>
 </RCC>
