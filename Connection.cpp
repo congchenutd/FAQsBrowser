@@ -8,6 +8,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDebug>
+#include <QFile>
 
 Connection* Connection::_instance = 0;
 
@@ -17,6 +18,10 @@ Connection* Connection::getInstance()
         _instance = new Connection;
     return _instance;
 }
+
+Connection::Connection()
+    : _settings(Settings::getInstance())
+{}
 
 void Connection::ping()
 {
@@ -152,6 +157,20 @@ void Connection::onPersonalProfileReply(QNetworkReply* reply)
     }
 }
 
-Connection::Connection()
-    : _settings(Settings::getInstance())
-{}
+void Connection::submitPhoto(const QString& filePath)
+{
+    QFile* file = new QFile(filePath);
+    if(!file->open(QFile::ReadOnly))
+        return;
+
+    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), file,    SLOT(deleteLater()));
+
+    QString url = tr("http://%1:%2/?action=submitphoto&username=%3")
+            .arg(_settings->getServerIP())
+            .arg(_settings->getServerPort())
+            .arg(_settings->getUserName());
+
+    manager->post(QNetworkRequest(QUrl(url)), file);
+}

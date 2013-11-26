@@ -17,6 +17,10 @@ OptionsDlg::OptionsDlg(QWidget* parent) :
     ui.leEmail     ->setText(settings->getEmail());
     ui.btFont      ->setFont(settings->getFont());
 
+    QPixmap pixmap = QPixmap(settings->getUserName() + ".png").scaled(128, 128);
+    if(!pixmap.isNull())
+        ui.labelImage->setPixmap(pixmap);
+
     connect(Connection::getInstance(), SIGNAL(pingReply(bool)), this, SLOT(onPingReply(bool)));
     connect(ui.leServerIP,   SIGNAL(textEdited(QString)), this, SLOT(onPingServer()));
     connect(ui.leServerPort, SIGNAL(textEdited(QString)), this, SLOT(onPingServer()));
@@ -34,6 +38,12 @@ void OptionsDlg::accept()
     settings->setUserName  (ui.leUsername  ->text());
     settings->setEmail     (ui.leEmail     ->text());
     settings->setFont      (ui.btFont      ->font());
+
+    QString photoFilePath = settings->getUserName() + ".png";
+    if(ui.labelImage->pixmap() != 0)
+        ui.labelImage->pixmap()->save(photoFilePath, "png");  // save photo file
+
+    Connection::getInstance()->submitPhoto(photoFilePath);    // submit to server
 
     QDialog::accept();
 }

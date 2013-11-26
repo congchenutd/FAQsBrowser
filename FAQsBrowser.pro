@@ -25,7 +25,8 @@ Main.cpp \
     Connection.cpp \
     Settings.cpp \
     HTMLCreator.cpp \
-    Template.cpp
+    Template.cpp \
+    ImageLabel.cpp
 
 HEADERS  += MainWindow.h \
     TabWidget.h \
@@ -40,7 +41,8 @@ HEADERS  += MainWindow.h \
     Connection.h \
     Settings.h \
     HTMLCreator.h \
-    Template.h
+    Template.h \
+    ImageLabel.h
 
 FORMS    += MainWindow.ui \
     OptionsDlg.ui \

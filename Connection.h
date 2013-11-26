@@ -20,6 +20,7 @@ public:
     void logAPI   (const QString& apiSig);  // user viewed the api doc
     void logAnswer(const QString& link);    // user clicked an answer link
     void personalProfile(const QString& userName);
+    void submitPhoto(const QString& filePath);
 
 private slots:
     void onPingReply (QNetworkReply* reply);
