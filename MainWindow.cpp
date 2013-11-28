@@ -91,6 +91,15 @@ WebView *MainWindow::newTab(WebView::PageRole role) {
     return _tabWidget->newTab(role);
 }
 
+void MainWindow::newPersonalTab(const QString& userName)
+{
+    Settings* settings = Settings::getInstance();
+    _tabWidget->newTab(WebView::PROFILE_ROLE)->load(
+        QUrl(tr("http://%1:%2/?action=personal&username=%3").arg(settings->getServerIP())
+                                                            .arg(settings->getServerPort())
+                                                            .arg(userName)));
+}
+
 MainWindow* MainWindow::_instance = 0;
 
 MainWindow* MainWindow::getInstance() {
@@ -239,7 +248,7 @@ void MainWindow::onNotHelpful() {
 }
 
 void MainWindow::onPersonal() {
-    _tabWidget->newPersonalTab(Settings::getInstance()->getUserName());
+    newPersonalTab(Settings::getInstance()->getUserName());
 }
 
 WebView* MainWindow::currentWebView() const {

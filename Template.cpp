@@ -21,5 +21,5 @@ void Template::setValue(const QString& attribute, const QString& value) {
 }
 
 QString Template::toString() const {
-    return QString(html).remove(QRegExp("\\$\\w+\\$"));  // remove placeholders
+    return QString(html).remove(QRegExp("\\$\\w+\\$"));  // remove placeholders $XXX$
 }

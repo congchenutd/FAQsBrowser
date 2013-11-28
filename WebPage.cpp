@@ -6,7 +6,6 @@
 #include "Connection.h"
 #include "Settings.h"
 #include "API.h"
-#include "HTMLCreator.h"
 
 #include <QDesktopServices>
 #include <QNetworkRequest>
@@ -17,10 +16,10 @@
 #include <QJsonObject>
 
 WebPage::WebPage(QObject* parent)
-    : QWebPage(parent),
-      _visitor(DocVisitorFactory::getInstance()->getVisitor(
-                   Settings::getInstance()->getLibrary()))
+    : QWebPage(parent)
 {
+    _visitor = DocVisitorFactory::getInstance()->getVisitor(
+                       Settings::getInstance()->getLibrary());
     connect(this, SIGNAL(loadFinished(bool)), this, SLOT(requestFAQs()));
     connect(Connection::getInstance(), SIGNAL(queryReply(QJsonArray)),
             this, SLOT(onQueryReply(QJsonArray)));
@@ -34,31 +33,17 @@ void WebPage::requestFAQs()
         Connection::getInstance()->query(_visitor->getLibrary(), classSig);
 }
 
-void WebPage::onQueryReply(const QJsonArray& APIs)
+void WebPage::onQueryReply(const QJsonArray& jaAPIs)
 {
-    if(APIs.empty())
+    if(jaAPIs.empty())
         return;
 
     // for each API, add a FAQ section to its document
-    for(QJsonArray::ConstIterator it = APIs.begin(); it != APIs.end(); ++it)
+    for(QJsonArray::ConstIterator it = jaAPIs.begin(); it != jaAPIs.end(); ++it)
     {
-        QJsonObject apiJson = (*it).toObject();
-        _visitor->addFAQs(this, apiJson);
+        QJsonObject joAPI = (*it).toObject();
+        _visitor->addFAQ(this, joAPI);
     }
-}
-
-void WebPage::loadPersonalProfile(const QString& userName)
-{
-    connect(Connection::getInstance(), SIGNAL(personalProfileReply(QJsonObject)),
-            this, SLOT(onPersonalProfileReply(QJsonObject)));
-    Connection::getInstance()->personalProfile(userName);  // request profile info
-}
-
-void WebPage::onPersonalProfileReply(const QJsonObject& jsonObj)
-{
-    mainFrame()->setHtml(HTMLCreator().createProfilePage(jsonObj));
-    disconnect(Connection::getInstance(), SIGNAL(personalProfileReply(QJsonObject)),
-               this, SLOT(onPersonalProfileReply(QJsonObject)));  // avoid updating others' profile
 }
 
 bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type)
@@ -69,9 +54,7 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
         if(request.url().toString().startsWith("profile:", Qt::CaseInsensitive))
         {
             QString userName = request.url().toString().remove("profile:");
-            MainWindow::getInstance()->newTab(WebView::PROFILE_ROLE)
-                                        ->getWebPage()
-                                            ->loadPersonalProfile(userName);
+            MainWindow::getInstance()->newPersonalTab(userName);
             return false;
         }
 

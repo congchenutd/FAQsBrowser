@@ -24,7 +24,6 @@ Main.cpp \
     API.cpp \
     Connection.cpp \
     Settings.cpp \
-    HTMLCreator.cpp \
     Template.cpp \
     ImageLabel.cpp
 
@@ -40,7 +39,6 @@ HEADERS  += MainWindow.h \
     API.h \
     Connection.h \
     Settings.h \
-    HTMLCreator.h \
     Template.h \
     ImageLabel.h
 

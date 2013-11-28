@@ -15,6 +15,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget* parent = 0);
     WebView* newTab(WebView::PageRole role = WebView::NULL_ROLE);
+    void newPersonalTab(const QString& userName);
 
     static MainWindow* getInstance();
 

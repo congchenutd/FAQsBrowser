@@ -18,7 +18,7 @@ signals:
     void historyChanged();   // page back and forward history
 
 public:
-    TabWidget(QWidget *parent = 0);
+    TabWidget(QWidget* parent = 0);
 
     WebView* getCurrentWebView() const;
     WebView* getWebView(int index) const;
@@ -27,7 +27,6 @@ public:
     int getSearchTabIndex(const API& api, const QString& query, const QString& question);
 
     WebView* newTab(WebView::PageRole role = WebView::NULL_ROLE);
-    void newPersonalTab(const QString& userName);
 
 public slots:
     void onCloseTab(int index = -1);

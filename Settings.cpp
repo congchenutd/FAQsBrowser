@@ -2,7 +2,7 @@
 #include <QFont>
 #include <QApplication>
 
-Settings *Settings::getInstance()
+Settings* Settings::getInstance()
 {
     if(_instance == 0)
         _instance = new Settings();

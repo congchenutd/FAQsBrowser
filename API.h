@@ -23,7 +23,7 @@ public:
     QString toSignature()   const;  // e.g., Java SE 7;java.util.ArrayList.ensureCapacity(int)
     QString toLowestName()  const;  // method name or class name if method is empty
 
-    static API fromJson(const QJsonObject& json);
+    static API fromSignature(const QString& sig);
 
 private:
     QString _library;

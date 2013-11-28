@@ -34,22 +34,20 @@ QString API::toLowestName() const {
     return getMethodName().isEmpty() ? getClassName() : getMethodName();
 }
 
-API API::fromJson(const QJsonObject& json)
+API API::fromSignature(const QString& sig)
 {
     API result;
-    QString apiSig = json.value("apisig").toString();        // package.class.method(params)
-
-    QString methodSig;
-    int params = QRegExp("\\(.*\\)").indexIn(apiSig);
+    QString signature = sig;
+    int params = QRegExp("\\(.*\\)").indexIn(sig);
     if(params > -1)
     {
         // the dot before method
-        int dot = apiSig.lastIndexOf(".", params);
-        methodSig = apiSig.right(apiSig.length() - dot - 1);  // method(params)
+        int dot = signature.lastIndexOf(".", params);
+        QString methodSig = signature.right(signature.length() - dot - 1);  // method(params)
         result.setMethodSignature(methodSig);
-        apiSig = apiSig.left(apiSig.lastIndexOf(methodSig) - 1);
+        signature = signature.left(signature.lastIndexOf(methodSig) - 1);
     }
 
-    result.setClassSignature(apiSig);
+    result.setClassSignature(signature);
     return result;
 }

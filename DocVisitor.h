@@ -19,8 +19,8 @@ public:
     virtual QWebElement getRootElement(const QWebPage* page) const = 0;
     virtual API         urlToAPI      (const QString& url)   const = 0;
 
-    // add the faqs in json to corresponding position (class or method) on the page
-    virtual void addFAQs(const QWebPage* page, const QJsonObject& apiJson) = 0;
+    // add the faq in json to corresponding position (class or method) on the page
+    virtual void addFAQ(const QWebPage* page, const QJsonObject& joFAQ) = 0;
     virtual ~IDocVisitor() {}
 };
 
@@ -32,7 +32,7 @@ public:
     QString     getClassSig   (const QWebElement& e) const;
     QWebElement getRootElement(const QWebPage* page) const;
     API         urlToAPI      (const QString& url)   const;
-    void addFAQs(const QWebPage* page, const QJsonObject& apiJson);
+    void addFAQ(const QWebPage* page, const QJsonObject& joFAQ);
 };
 
 

@@ -1,5 +1,4 @@
 #include "DocVisitor.h"
-#include "HTMLCreator.h"
 #include "Settings.h"
 #include <QObject>
 #include <QString>
@@ -82,10 +81,10 @@ API JavaSE7Visitor::urlToAPI(const QString& url) const
     return result;
 }
 
-void JavaSE7Visitor::addFAQs(const QWebPage* page, const QJsonObject& apiJson)
+void JavaSE7Visitor::addFAQ(const QWebPage* page, const QJsonObject& joFAQ)
 {
-    API api = API::fromJson(apiJson);
-    QString html = HTMLCreator().createFAQ(apiJson);
+    API api = API::fromSignature(joFAQ.value("apisig").toString());
+    QString html = joFAQ.value("html").toString();
 
     if(api.getMethodSignature().isEmpty())   // for class
     {

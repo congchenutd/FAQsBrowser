@@ -13,14 +13,12 @@ class WebPage : public QWebPage
 
 public:
     WebPage(QObject* parent = 0);
-    void loadPersonalProfile(const QString& userName);
 
 public slots:
     void requestFAQs();
 
 private slots:
-    void onQueryReply(const QJsonArray& APIs);
-    void onPersonalProfileReply(const QJsonObject &jsonObj);
+    void onQueryReply(const QJsonArray& jaAPIs);
 
 protected:
     bool acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type);

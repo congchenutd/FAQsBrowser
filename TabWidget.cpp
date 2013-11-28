@@ -66,10 +66,6 @@ int TabWidget::getSearchTabIndex(const API& api, const QString& query, const QSt
     return i;
 }
 
-void TabWidget::newPersonalTab(const QString& userName) {
-    newTab(WebView::PROFILE_ROLE)->getWebPage()->loadPersonalProfile(userName);
-}
-
 void TabWidget::onAPISearch(const API& api)
 {
     SearchDlg dlg(this);
