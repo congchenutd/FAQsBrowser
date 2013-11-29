@@ -104,6 +104,10 @@ void JavaSE7Visitor::addFAQ(const QWebPage* page, const QJsonObject& joFAQ)
     }
 }
 
+void JavaSE7Visitor::setStyleSheet(const QWebPage*, const QString&)
+{
+}
+
 /////////////////////////////////////////////////////////////////////
 DocVisitorFactory* DocVisitorFactory::_instance = 0;
 

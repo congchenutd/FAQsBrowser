@@ -43,7 +43,7 @@ void Settings::setFont(const QFont& font)
 }
 
 Settings::Settings()
-    : QSettings("FQAsBrowser.ini", QSettings::IniFormat)
+    : QSettings("FAQBrowser.ini", QSettings::IniFormat)
 {}
 
 Settings* Settings::_instance = 0;

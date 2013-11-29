@@ -21,6 +21,7 @@ public:
 
     // add the faq in json to corresponding position (class or method) on the page
     virtual void addFAQ(const QWebPage* page, const QJsonObject& joFAQ) = 0;
+    virtual void setStyleSheet(const QWebPage* page, const QString& link) = 0;
     virtual ~IDocVisitor() {}
 };
 
@@ -33,6 +34,7 @@ public:
     QWebElement getRootElement(const QWebPage* page) const;
     API         urlToAPI      (const QString& url)   const;
     void addFAQ(const QWebPage* page, const QJsonObject& joFAQ);
+    void setStyleSheet(const QWebPage* page, const QString& link);
 };
 
 

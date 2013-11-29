@@ -18,7 +18,7 @@ public slots:
     void requestFAQs();
 
 private slots:
-    void onQueryReply(const QJsonArray& jaAPIs);
+    void onQueryReply(const QJsonObject& joDocPage);
 
 protected:
     bool acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type);

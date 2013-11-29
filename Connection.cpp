@@ -124,9 +124,10 @@ void Connection::onQueryReply(QNetworkReply* reply)
     QJsonDocument doc = QJsonDocument::fromJson(data, &err);
     if(err.error == QJsonParseError::NoError)
     {
-        QJsonArray jaAPIs = doc.array();
+        QJsonObject joDocPage = doc.object();
+        QJsonArray jaAPIs = joDocPage.value("apis").toArray();
         if(!jaAPIs.isEmpty())
-            emit queryReply(jaAPIs);
+            emit queryReply(joDocPage);
     }
 }
 

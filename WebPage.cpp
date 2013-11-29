@@ -21,8 +21,8 @@ WebPage::WebPage(QObject* parent)
     _visitor = DocVisitorFactory::getInstance()->getVisitor(
                        Settings::getInstance()->getLibrary());
     connect(this, SIGNAL(loadFinished(bool)), this, SLOT(requestFAQs()));
-    connect(Connection::getInstance(), SIGNAL(queryReply(QJsonArray)),
-            this, SLOT(onQueryReply(QJsonArray)));
+    connect(Connection::getInstance(), SIGNAL(queryReply(QJsonObject)),
+            this, SLOT(onQueryReply(QJsonObject)));
 }
 
 void WebPage::requestFAQs()
@@ -33,12 +33,15 @@ void WebPage::requestFAQs()
         Connection::getInstance()->query(_visitor->getLibrary(), classSig);
 }
 
-void WebPage::onQueryReply(const QJsonArray& jaAPIs)
+void WebPage::onQueryReply(const QJsonObject& joDocPage)
 {
-    if(jaAPIs.empty())
+    if(joDocPage.empty())
         return;
 
+    _visitor->setStyleSheet(this, joDocPage.value("style").toString());
+
     // for each API, add a FAQ section to its document
+    QJsonArray jaAPIs = joDocPage.value("apis").toArray();
     for(QJsonArray::ConstIterator it = jaAPIs.begin(); it != jaAPIs.end(); ++it)
     {
         QJsonObject joAPI = (*it).toObject();

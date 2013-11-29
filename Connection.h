@@ -31,7 +31,7 @@ signals:
     void pingReply(bool alive);
 
     // an array of api objects, each api object contains multiple questions
-    void queryReply(const QJsonArray&);
+    void queryReply(const QJsonObject&);
 
     void personalProfileReply(const QJsonObject&);
 
