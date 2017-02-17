@@ -87,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(_tabWidget, SIGNAL(linkHovered(QString)), statusBar(), SLOT(showMessage(QString)));
 }
 
-WebView *MainWindow::newTab(WebView::PageRole role) {
+WebView* MainWindow::newTab(WebView::PageRole role) {
     return _tabWidget->newTab(role);
 }
 
