@@ -8,7 +8,7 @@ class QWebElement;
 class QWebPage;
 
 // Read and write doc pages
-// parses the web element clicked and finds the context (api) of the click
+// parses clicked web element and finds the context (api) of the click
 // adds faqs section to corresponding place in the document
 class IDocVisitor
 {

@@ -1,4 +1,4 @@
-QT += core gui network widgets webkitwidgets
+QT += core gui network widgets webenginewidgets
 
 win32 {
     RC_FILE = Resource.rc
