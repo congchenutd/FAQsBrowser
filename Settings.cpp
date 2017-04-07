@@ -1,4 +1,4 @@
-#include "Settings.h"
+﻿#include "Settings.h"
 #include <QFont>
 #include <QApplication>
 
@@ -43,7 +43,7 @@ void Settings::setFont(const QFont& font)
 }
 
 Settings::Settings()
-    : QSettings("FAQBrowser.ini", QSettings::IniFormat)
+    : QSettings("FAQsBrowser.ini", QSettings::IniFormat)
 {}
 
 Settings* Settings::_instance = 0;

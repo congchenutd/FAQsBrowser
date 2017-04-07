@@ -1,4 +1,4 @@
-#include "WebPage.h"
+﻿#include "WebPage.h"
 #include "WebView.h"
 #include "MainWindow.h"
 #include "TabWidget.h"
@@ -18,8 +18,8 @@
 WebPage::WebPage(QObject* parent)
     : QWebPage(parent)
 {
-    _visitor = DocVisitorFactory::getInstance()->getVisitor(
-                       Settings::getInstance()->getLibrary());
+    const QString libName = Settings::getInstance()->getLibrary();
+    _visitor = DocVisitorFactory::getInstance()->getVisitor(libName);
     connect(this, SIGNAL(loadFinished(bool)), this, SLOT(requestFAQs()));
     connect(Connection::getInstance(), SIGNAL(queryReply(QJsonObject)),
             this, SLOT(onQueryReply(QJsonObject)));
