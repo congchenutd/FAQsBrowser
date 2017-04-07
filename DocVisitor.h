@@ -1,4 +1,4 @@
-#ifndef DOCVISITOR_H
+﻿#ifndef DOCVISITOR_H
 #define DOCVISITOR_H
 
 #include <QMetaType>
@@ -8,16 +8,16 @@ class QWebElement;
 class QWebPage;
 
 // Read and write doc pages
-// parses the web element clicked and finds the context (api) of the click
+// parses the clicked web element and finds the context (api) of the click
 // adds faqs section to corresponding place in the document
 class IDocVisitor
 {
 public:
     virtual QByteArray  getLibrary    ()                     const = 0;
-    virtual API         getAPI        (const QWebElement& e) const = 0;
-    virtual QString     getClassSig   (const QWebElement& e) const = 0;
-    virtual QWebElement getRootElement(const QWebPage* page) const = 0;
-    virtual API         urlToAPI      (const QString& url)   const = 0;
+    virtual API         getAPI        (const QWebElement& e) const = 0; // find the API of a web element
+    virtual QString     getClassSig   (const QWebElement& e) const = 0; // find the class signature of a web element
+    virtual QWebElement getRootElement(const QWebPage* page) const = 0; // find the root of a web page
+    virtual API         urlToAPI      (const QString& url)   const = 0; // parse a URL and convert it to an API object
 
     // add the faq in json to corresponding position (class or method) on the page
     virtual void addFAQ(const QWebPage* page, const QJsonObject& joFAQ) = 0;
@@ -25,6 +25,7 @@ public:
     virtual ~IDocVisitor() {}
 };
 
+// For Java SE 7
 class JavaSE7Visitor : public IDocVisitor
 {
 public:

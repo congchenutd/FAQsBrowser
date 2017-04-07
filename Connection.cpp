@@ -1,4 +1,4 @@
-#include "Connection.h"
+﻿#include "Connection.h"
 #include "Settings.h"
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -23,6 +23,9 @@ Connection::Connection()
     : _settings(Settings::getInstance())
 {}
 
+/**
+ * Check if the server is alive by sending a ping message and wait for a pong response
+ */
 void Connection::ping()
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
@@ -30,6 +33,7 @@ void Connection::ping()
             this,    SLOT  (onPingReply(QNetworkReply*)));
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
+    // Send request
     QString url = tr("http://%1:%2/?action=ping&username=%3")
             .arg(_settings->getServerIP())
             .arg(_settings->getServerPort())
@@ -37,12 +41,23 @@ void Connection::ping()
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
+/**
+ * Ping reply returned
+ * @param reply - reply object
+ */
 void Connection::onPingReply(QNetworkReply* reply)
 {
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    emit pingReply(status == 200);
+    emit pingReply(status == 200);  // status code 200 means OK
 }
 
+/**
+ * Save a Q&A pair, when user has found an answer to her question
+ * @param apiSig    - signature of the related API
+ * @param question  - search question
+ * @param link      - link to the answer page
+ * @param title     - title of the answer page
+ */
 void Connection::save(const QString& apiSig, const QString& question,
                       const QString& link,   const QString& title)
 {
@@ -66,7 +81,12 @@ void Connection::save(const QString& apiSig, const QString& question,
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
-void Connection::query(const QString& libraryName, const QString& classSig)
+/**
+ * Query for all Q&A pairs for a given library and class
+ * @param libraryName   - library name
+ * @param classSig      - class signature
+ */
+void Connection::queryFAQs(const QString& libraryName, const QString& classSig)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished    (QNetworkReply*)),
@@ -82,7 +102,11 @@ void Connection::query(const QString& libraryName, const QString& classSig)
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
-void Connection::logAPI(const QString& apiSig)
+/**
+ * Save the event of the user read the official document of an API
+ * @param apiSig    - signature of the API
+ */
+void Connection::logReadAPIDocument(const QString& apiSig)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
@@ -93,12 +117,16 @@ void Connection::logAPI(const QString& apiSig)
             .arg(_settings->getUserName())
             .arg(_settings->getEmail())
             .arg(apiSig);
-    qDebug() << "Log API: " << url;
+    qDebug() << "Log API document reading: " << url;
 
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
-void Connection::logAnswer(const QString& link)
+/**
+ * Save the event of the user clicked an answer link
+ * @param link  - the link to the answer page
+ */
+void Connection::logClickedAnswer(const QString& link)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
@@ -112,14 +140,18 @@ void Connection::logAnswer(const QString& link)
     // link may contain illegal chars for url, percent encode them
     // Workaround: tr doesn't work correctly for percent encoded strings
     url += "&link="  + QUrl::toPercentEncoding(link);
-    qDebug() << "Log answer: " << url;
+    qDebug() << "Log answer click: " << url;
 
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
+/**
+ * Process query reply
+ * @param reply - the reply object
+ */
 void Connection::onQueryReply(QNetworkReply* reply)
 {
-    QByteArray data = reply->readAll();
+    QByteArray data = reply->readAll(); // the reply is a json array representing Q&A pairs of an API
     QJsonParseError err;
     QJsonDocument doc = QJsonDocument::fromJson(data, &err);
     if(err.error == QJsonParseError::NoError)
@@ -131,11 +163,14 @@ void Connection::onQueryReply(QNetworkReply* reply)
     }
 }
 
-void Connection::personalProfile(const QString& userName)
+/**
+ * Query for a user profile
+ */
+void Connection::queryUserProfile(const QString& userName)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished    (QNetworkReply*)),
-            this,    SLOT  (onPersonalProfileReply(QNetworkReply*)));
+            this,    SLOT  (onUserProfileReply(QNetworkReply*)));
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
     QString url = tr("http://%1:%2/?action=personal&username=%3")
@@ -145,19 +180,26 @@ void Connection::personalProfile(const QString& userName)
     manager->get(QNetworkRequest(QUrl(url)));
 }
 
-void Connection::onPersonalProfileReply(QNetworkReply* reply)
+/**
+ * Process user profile query reply
+ */
+void Connection::onUserProfileReply(QNetworkReply* reply)
 {
     QByteArray data = reply->readAll();
     QJsonParseError err;
     QJsonDocument doc = QJsonDocument::fromJson(data, &err);
     if(err.error == QJsonParseError::NoError)
     {
-        QJsonObject profile = doc.object();
+        QJsonObject profile = doc.object(); // reply is a JSON object containing profile info
         if(!profile.isEmpty())
-            emit personalProfileReply(profile);
+            emit userProfileReply(profile);
     }
 }
 
+/**
+ * Send user photo to the server
+ * @param filePath  - path of the file on the client machine
+ */
 void Connection::submitPhoto(const QString& filePath)
 {
     QFile* file = new QFile(filePath);

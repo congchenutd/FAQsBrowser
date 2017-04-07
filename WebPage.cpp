@@ -30,7 +30,7 @@ void WebPage::requestFAQs()
     // when the page is loaded, query for the FAQ for this class
     QString classSig = _visitor->getClassSig(_visitor->getRootElement(this));
     if(!classSig.isEmpty())   // is a class page
-        Connection::getInstance()->query(_visitor->getLibrary(), classSig);
+        Connection::getInstance()->queryFAQs(_visitor->getLibrary(), classSig);
 }
 
 void WebPage::onQueryReply(const QJsonObject& joDocPage)
@@ -70,10 +70,10 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
 
             // document link clicked
             if(url.startsWith(Settings::getInstance()->getDocUrl()))
-                Connection::getInstance()->logAPI(_visitor->urlToAPI(url).toSignature());
+                Connection::getInstance()->logReadAPIDocument(_visitor->urlToAPI(url).toSignature());
             // external link (answer link) clicked
             else
-                Connection::getInstance()->logAnswer(url);
+                Connection::getInstance()->logClickedAnswer(url);
         }
 
         // links on the search page open in new tab

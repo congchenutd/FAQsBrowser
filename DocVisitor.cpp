@@ -1,4 +1,4 @@
-#include "DocVisitor.h"
+﻿#include "DocVisitor.h"
 #include "Settings.h"
 #include <QObject>
 #include <QString>
@@ -28,7 +28,7 @@ API JavaSE7Visitor::getAPI(const QWebElement& e) const
     result.setLibrary       (getLibrary());
     result.setClassSignature(getClassSig(e));
 
-    // method
+    // Check if the element is a method
     // go up until <ul class="blockList"> or blockListLast
     QWebElement p = e;
     while(!(p.tagName() == "UL" &&
@@ -47,6 +47,11 @@ API JavaSE7Visitor::getAPI(const QWebElement& e) const
     return result;
 }
 
+/**
+ * Find the class signature of a web element
+ * @param e - a web element on a class document page
+ * @return  - a string representing the class signature
+ */
 QString JavaSE7Visitor::getClassSig(const QWebElement& e) const
 {
     // class signature is found at the last ul tag with a class=inheritance attribute
@@ -54,6 +59,11 @@ QString JavaSE7Visitor::getClassSig(const QWebElement& e) const
             .toPlainText().remove(QRegExp("<.*>"));  // remove generic things like <T>
 }
 
+/**
+ * Find the root element of a web page
+ * @param page  - a webpage object
+ * @return      - a web element for the root
+ */
 QWebElement JavaSE7Visitor::getRootElement(const QWebPage* page) const
 {
     foreach(const QWebFrame* frame, page->mainFrame()->childFrames())
@@ -64,6 +74,7 @@ QWebElement JavaSE7Visitor::getRootElement(const QWebPage* page) const
 
 // from http://docs.oracle.com/javase/7/docs/api/javax/swing/AbstractAction.html#setEnabled(boolean)
 // to Java SE 7; javax.swing.AbstractAction.setEnabled(boolean)
+// There is a rule of URLs in Java documents
 API JavaSE7Visitor::urlToAPI(const QString& url) const
 {
     API result;
@@ -72,19 +83,24 @@ API JavaSE7Visitor::urlToAPI(const QString& url) const
     link.remove(documentRoot);
     link.remove(".html");
     link.remove(".htm");
-    link.replace("/", ".");
+    link.replace("/", "."); // remove .html and convert / to .
 
     result.setLibrary(Settings::getInstance()->getLibrary());
-    result.setClassSignature (link.section("#", 0, 0));
-    result.setMethodSignature(link.section("#", 1, 1));
+    result.setClassSignature (link.section("#", 0, 0)); // left of # is class signature
+    result.setMethodSignature(link.section("#", 1, 1)); // right of # is method signature
 
     return result;
 }
 
+/**
+ * Add a FAQ section to a document page
+ * @param page  - a document webpage
+ * @param joFAQ - a JSON object representing a FAQ section
+ */
 void JavaSE7Visitor::addFAQ(const QWebPage* page, const QJsonObject& joFAQ)
 {
     API api = API::fromSignature(joFAQ.value("apisig").toString());
-    QString html = joFAQ.value("html").toString();
+    QString html = joFAQ.value("html").toString();  // html content of the FAQ section
 
     if(api.getMethodSignature().isEmpty())   // for class
     {

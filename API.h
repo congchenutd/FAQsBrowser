@@ -1,11 +1,11 @@
-#ifndef API_H
+﻿#ifndef API_H
 #define API_H
 
 #include <QString>
 
 class QJsonObject;
 
-// representing the context of a search, ie class, method or attribute
+// An API represents the context of a search, ie class, method or attribute
 class API
 {
 public:
@@ -19,11 +19,11 @@ public:
     QString getClassName()  const;
     QString getMethodName() const;
 
-    QString toQueryString() const;  // e.g., Java SE 7 ensureCapacity
+    QString toQueryString() const;  // to search query that a human would typically type, e.g., Java SE 7 ensureCapacity
     QString toSignature()   const;  // e.g., Java SE 7;java.util.ArrayList.ensureCapacity(int)
-    QString toLowestName()  const;  // method name or class name if method is empty
+    QString toLowestName()  const;  // lowest level of the name, ie method name, or class name if method is empty
 
-    static API fromSignature(const QString& sig);
+    static API fromSignature(const QString& sig);   // construct an API object from a signature
 
 private:
     QString _library;
