@@ -70,10 +70,10 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
 
             // document link clicked
             if(url.startsWith(Settings::getInstance()->getDocUrl()))
-                Connection::getInstance()->logReadAPIDocument(_visitor->urlToAPI(url).toSignature());
+                Connection::getInstance()->logDocumentReading(_visitor->urlToAPI(url).toSignature());
             // external link (answer link) clicked
             else
-                Connection::getInstance()->logClickedAnswer(url);
+                Connection::getInstance()->logAnswerClicking(url);
         }
 
         // links on the search page open in new tab

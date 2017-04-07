@@ -23,10 +23,10 @@ public:
     void queryFAQs(const QString& libraryName, const QString& classSig);
 
     // Log API reading
-    void logReadAPIDocument   (const QString& apiSig);  // user viewed the api doc
+    void logDocumentReading(const QString& apiSig);  // user viewed the api doc
 
     // Log answer reading
-    void logClickedAnswer(const QString& link);    // user clicked an answer link
+    void logAnswerClicking(const QString& link);    // user clicked an answer link
 
     // Query a user's profile
     void queryUserProfile(const QString& userName);

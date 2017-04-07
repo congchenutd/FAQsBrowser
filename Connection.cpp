@@ -106,7 +106,7 @@ void Connection::queryFAQs(const QString& libraryName, const QString& classSig)
  * Save the event of the user read the official document of an API
  * @param apiSig    - signature of the API
  */
-void Connection::logReadAPIDocument(const QString& apiSig)
+void Connection::logDocumentReading(const QString& apiSig)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
@@ -126,7 +126,7 @@ void Connection::logReadAPIDocument(const QString& apiSig)
  * Save the event of the user clicked an answer link
  * @param link  - the link to the answer page
  */
-void Connection::logClickedAnswer(const QString& link)
+void Connection::logAnswerClicking(const QString& link)
 {
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
