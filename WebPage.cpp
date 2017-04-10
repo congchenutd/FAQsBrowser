@@ -86,6 +86,13 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
             return false;
         }
     }
+    else if (type == NavigationTypeFormSubmitted)
+    {
+        qDebug() << "Search within search page" << request.url();
+        // TODO: this is the place where we can capture if the user reuses the search page
+        // Best option is perhaps to replace the original search line and button with our own,
+        // thus we are able to constrain the related API
+    }
     return QWebPage::acceptNavigationRequest(frame, request, type);
 }
 
