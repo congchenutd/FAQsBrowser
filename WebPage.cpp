@@ -77,7 +77,7 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
         }
 
         // links on the search page open in new tab
-        if(thisView->getRole() == WebView::SEARCH_ROLE)
+        else if(thisView->getRole() == WebView::SEARCH_ROLE)
         {
             WebView* newView = MainWindow::getInstance()->newTab(WebView::RESULT_ROLE);
             newView->setAPI     (thisView->getAPI());    // transfer the attributes

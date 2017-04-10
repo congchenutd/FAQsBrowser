@@ -1,4 +1,4 @@
-#ifndef TABWIDGET_H
+﻿#ifndef TABWIDGET_H
 #define TABWIDGET_H
 
 #include <QTabWidget>
@@ -27,9 +27,7 @@ public:
     int getSearchTabIndex(const API& api, const QString& query, const QString& question);
 
     WebView* newTab(WebView::PageRole role = WebView::NULL_ROLE);
-
-public slots:
-    void onCloseTab(int index = -1);
+    void closeTab(int index = -1);
 
 private slots:
     void onCloseOtherTabs(int index);

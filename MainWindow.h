@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include "ui_MainWindow.h"
@@ -41,6 +41,9 @@ private slots:
     void onHelpful();
     void onNotHelpful();
     void onPersonal();
+    void saveUnansweredQuestion(int index);
+
+private:
 
 private:
     WebView* currentWebView() const;

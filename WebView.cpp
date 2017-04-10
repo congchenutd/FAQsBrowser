@@ -1,4 +1,4 @@
-#include "WebView.h"
+﻿#include "WebView.h"
 #include "WebPage.h"
 #include "DocVisitor.h"
 #include "Settings.h"
@@ -60,18 +60,15 @@ void WebView::contextMenuEvent(QContextMenuEvent* event)
 
         // try to find API
         API api = _visitor->getAPI(hitTest.enclosingBlockElement());
-//        if(!api.getClassSignature().isEmpty())  // is a class page
-//        {
-//            setAPI(api);   // save the API current viewing
+        if(!api.getClassSignature().isEmpty())  // is a class page
+        {
+            setAPI(api);   // save the API current viewing
 
-//            // add an option for searching this API
-//            menu.addAction(QIcon(":/Images/Search.png"),
-//                           tr("Search for %1 on the Web").arg(api.toLowestName()),
-//                           this, SLOT(onSearchAPI()));
-//        }
-        menu.addAction(QIcon(":/Images/Search.png"),
-                                   tr("Search for Random.Next on the Web").arg(api.toLowestName()),
-                                   this, SLOT(onSearchAPI()));
+            // add an option for searching this API
+            menu.addAction(QIcon(":/Images/Search.png"),
+                           tr("Search for %1 on the Web").arg(api.toLowestName()),
+                           this, SLOT(onSearchAPI()));
+        }
     }
     menu.exec(mapToGlobal(event->pos()));
 }

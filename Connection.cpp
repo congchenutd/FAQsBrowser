@@ -76,7 +76,7 @@ void Connection::save(const QString& apiSig, const QString& question,
     // Workaround: tr doesn't work correctly for percent encoded strings
     url += "&title=" + QUrl::toPercentEncoding(title) +
            "&link="  + QUrl::toPercentEncoding(link);
-    qDebug() << url;
+    qDebug() << "Save Q&A " + url;
 
     manager->get(QNetworkRequest(QUrl(url)));
 }

@@ -1,4 +1,4 @@
-#include "TabWidget.h"
+﻿#include "TabWidget.h"
 #include "TabBar.h"
 #include "WebView.h"
 #include "SearchDlg.h"
@@ -14,7 +14,6 @@ TabWidget::TabWidget(QWidget *parent)
     setElideMode(Qt::ElideRight);
     setDocumentMode(true);
 
-    connect(_tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(onCloseTab(int)));
     connect(_tabBar, SIGNAL(closeOtherTabs(int)),    this, SLOT(onCloseOtherTabs(int)));
     connect(_tabBar, SIGNAL(closeAllTabs()),         this, SLOT(onCloseAllTabs()));
     connect(_tabBar, SIGNAL(reloadTab(int)),         this, SLOT(onReloadTab(int)));
@@ -61,8 +60,6 @@ int TabWidget::getSearchTabIndex(const API& api, const QString& query, const QSt
     webView->setQuestion(question);
     webView->load(QUrl("http://www.google.com/search?q=" + query));
 
-    // save as an unanswered question
-    Connection::getInstance()->save(api.toSignature(), question);
     return i;
 }
 
@@ -136,15 +133,15 @@ void TabWidget::onCloseOtherTabs(int index)
 {
     for(int i = count() - 1; i >= 0; --i)
         if(i != index)
-            onCloseTab(i);
+            closeTab(i);
 }
 
 void TabWidget::onCloseAllTabs() {
     for(int i = count() - 1; i >= 0; --i)
-        onCloseTab(i);
+        closeTab(i);
 }
 
-void TabWidget::onCloseTab(int index)
+void TabWidget::closeTab(int index)
 {
     if (index < 0 || index >= count())
         return;

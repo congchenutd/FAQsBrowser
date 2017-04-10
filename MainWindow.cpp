@@ -1,4 +1,4 @@
-#include "MainWindow.h"
+﻿#include "MainWindow.h"
 #include "TabWidget.h"
 #include "TabBar.h"
 #include "WebView.h"
@@ -80,11 +80,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui.toolBarSearch, SIGNAL(highlight(QString,bool,bool)),
             this, SLOT(onHighlight(QString,bool,bool)));
 
-    connect(_tabWidget, SIGNAL(loadProgress(int)),            this, SLOT(onLoadProgress(int)));
-    connect(_tabWidget, SIGNAL(currentTitleChanged(QString)), this, SLOT(onCurrentTitleChanged(QString)));
-    connect(_tabWidget, SIGNAL(currentChanged(int)),          this, SLOT(onCurrentTabChanged()));
-    connect(_tabWidget, SIGNAL(historyChanged()),             this, SLOT(onHistoryChanged()));
+    connect(_tabWidget, SIGNAL(loadProgress(int)),              this, SLOT(onLoadProgress(int)));
+    connect(_tabWidget, SIGNAL(currentTitleChanged(QString)),   this, SLOT(onCurrentTitleChanged(QString)));
+    connect(_tabWidget, SIGNAL(currentChanged(int)),            this, SLOT(onCurrentTabChanged()));
+    connect(_tabWidget, SIGNAL(historyChanged()),               this, SLOT(onHistoryChanged()));
     connect(_tabWidget, SIGNAL(linkHovered(QString)), statusBar(), SLOT(showMessage(QString)));
+    connect(_tabWidget, SIGNAL(tabCloseRequested(int)),         this, SLOT(saveUnansweredQuestion(int)));
 }
 
 WebView* MainWindow::newTab(WebView::PageRole role) {
@@ -240,11 +241,24 @@ void MainWindow::onHelpful()
                                         webView->url().toString(),
                                         webView->title());
 
-    _tabWidget->onCloseTab(_tabWidget->currentIndex());
+    _tabWidget->closeTab(_tabWidget->currentIndex());
 }
 
-void MainWindow::onNotHelpful() {
-    _tabWidget->onCloseTab(_tabWidget->currentIndex());
+void MainWindow::onNotHelpful()
+{
+    int index = _tabWidget->currentIndex();
+    saveUnansweredQuestion(index);
+}
+
+void MainWindow::saveUnansweredQuestion(int index)
+{
+    if(WebView* webView = _tabWidget->getWebView(index))
+    {
+        if (webView->getRole() == WebView::RESULT_ROLE)
+            Connection::getInstance()->save(webView->getAPI().toSignature(),
+                                            webView->getQuestion());
+    }
+    _tabWidget->closeTab(index);
 }
 
 void MainWindow::onPersonal() {

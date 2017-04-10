@@ -1,0 +1,6 @@
+Client side of the COFAQs system
+
+Todo:
+- Multiple, parallel search
+	Current system can't tell which search is for which question, therefore there can only be one active search.
+	Users are suggested to close previous search pages before starting a new one.
