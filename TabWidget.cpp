@@ -46,21 +46,21 @@ int TabWidget::getDocTabIndex()
 int TabWidget::getSearchTabIndex(const API& api, const QString& query, const QString& question)
 {
     // find existing search page
-    int i;
-    for(i = 0; i < count(); ++i)
-        if(getWebView(i)->getRole() == WebView::SEARCH_ROLE)
+    int index;
+    for(index = 0; index < count(); ++index)
+        if(getWebView(index)->getRole() == WebView::SEARCH_ROLE)
             break;
 
     // create a new view or using the existing one
-    WebView* webView = (i == count()) ? newTab(WebView::SEARCH_ROLE)
-                                      : getWebView(i);
+    WebView* webView = (index == count()) ? newTab(WebView::SEARCH_ROLE)
+                                      : getWebView(index);
 
     // load page
     webView->setAPI(api);
     webView->setQuestion(question);
-    webView->load(QUrl("http://www.google.com/search?q=" + query));
+    webView->load(QUrl(Settings::getInstance()->getSearchEngineUrl() + query));
 
-    return i;
+    return index;
 }
 
 void TabWidget::onAPISearch(const API& api)

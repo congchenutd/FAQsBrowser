@@ -1,4 +1,4 @@
-#include "OptionsDlg.h"
+﻿#include "OptionsDlg.h"
 #include "Connection.h"
 #include "Settings.h"
 
@@ -11,11 +11,12 @@ OptionsDlg::OptionsDlg(QWidget* parent) :
 
     // load settings
     Settings* settings = Settings::getInstance();
-    ui.leServerIP  ->setText(settings->getServerIP());
-    ui.leServerPort->setText(QString::number(settings->getServerPort()));
-    ui.leUsername  ->setText(settings->getUserName());
-    ui.leEmail     ->setText(settings->getEmail());
-    ui.btFont      ->setFont(settings->getFont());
+    ui.leServerIP       ->setText(settings->getServerIP());
+    ui.leServerPort     ->setText(QString::number(settings->getServerPort()));
+    ui.leUsername       ->setText(settings->getUserName());
+    ui.leEmail          ->setText(settings->getEmail());
+    ui.btFont           ->setFont(settings->getFont());
+    ui.leSearchEngineUrl->setText(settings->getSearchEngineUrl());
 
     QPixmap pixmap = QPixmap(settings->getUserName() + ".png").scaled(128, 128);
     if(!pixmap.isNull())
@@ -33,11 +34,12 @@ void OptionsDlg::accept()
 {
     // save settings
     Settings* settings = Settings::getInstance();
-    settings->setServerIP  (ui.leServerIP  ->text());
-    settings->setServerPort(ui.leServerPort->text().toInt());
-    settings->setUserName  (ui.leUsername  ->text());
-    settings->setEmail     (ui.leEmail     ->text());
-    settings->setFont      (ui.btFont      ->font());
+    settings->setServerIP       (ui.leServerIP  ->text());
+    settings->setServerPort     (ui.leServerPort->text().toInt());
+    settings->setUserName       (ui.leUsername  ->text());
+    settings->setEmail          (ui.leEmail     ->text());
+    settings->setFont           (ui.btFont      ->font());
+    settings->setSearchEngineUrl(ui.leSearchEngineUrl->text());
 
     QString photoFilePath = settings->getUserName() + ".png";
     if(ui.labelImage->pixmap() != 0)
