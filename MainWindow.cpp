@@ -254,7 +254,7 @@ void MainWindow::saveUnansweredQuestion(int index)
 {
     if(WebView* webView = _tabWidget->getWebView(index))
     {
-        if (webView->getRole() == WebView::RESULT_ROLE)
+        if (webView->getRole() == WebView::RESULT_ROLE || webView->getRole() == WebView::SEARCH_ROLE)
             Connection::getInstance()->save(webView->getAPI().toSignature(),
                                             webView->getQuestion());
     }
